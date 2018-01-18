@@ -1,5 +1,6 @@
 package cn.devin.fireprevention.View;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -69,10 +70,12 @@ public class TaskRvAdapter extends RecyclerView.Adapter<TaskRvAdapter.ViewHolder
      */
     public class ViewHolder extends RecyclerView.ViewHolder{
         TextView subject_tv;
+        CardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            subject_tv = itemView.findViewById(R.id.subject_tv);
+            subject_tv = itemView.findViewById(R.id.subject_tv_task);
+            cardView = itemView.findViewById(R.id.cardView_task);
         }
 
     }
