@@ -1,12 +1,10 @@
-package cn.devin.fireprevention.Control;
+package cn.devin.fireprevention.Presenter;
 
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
-import android.widget.Toast;
 
 import cn.devin.fireprevention.MyApplication;
 

@@ -1,4 +1,4 @@
-package cn.devin.fireprevention.Control;
+package cn.devin.fireprevention.Presenter;
 
 import android.content.Context;
 import android.util.Log;

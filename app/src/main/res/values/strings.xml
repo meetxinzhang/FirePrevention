@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">FirePrevention</string>
-    <string name="title_home">位置</string>
-    <string name="title_dashboard">任务</string>
-    <string name="title_notifications">我的</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
