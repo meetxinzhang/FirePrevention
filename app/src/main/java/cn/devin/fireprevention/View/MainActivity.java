@@ -1,6 +1,5 @@
 package cn.devin.fireprevention.View;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -11,7 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,26 +29,24 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
 
+import cn.devin.fireprevention.DetailContract;
+import cn.devin.fireprevention.Presenter.MainPresenter;
 import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.Presenter.MyOrientation;
 import cn.devin.fireprevention.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        MainService.ServDataChangeListener, MyOrientation.MyOrientationListener{
+        DetailContract.MainView{
 
-    //Args
-    private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
-    // Listener
-    private MyOrientation myOrientation;
+    // Args
+    private final String TAG = "MainActivity";
+    MainPresenter mainPresenter;
 
-    //View
-    private Marker me;
-    private Marker destination;
-    private MapView mapView;
-    protected TencentMap tencentMap;
-    private FloatingActionButton fab;
+    // View
     private ConstraintLayout newTask;
+    private MapContent mapContent;
+    private FloatingActionButton fab;
 
     // control Service by binder
     private MainService.TalkBinder talkBinder;
@@ -59,31 +56,34 @@ public class MainActivity extends AppCompatActivity
             //get the object of TalkBinder
             talkBinder = (MainService.TalkBinder) iBinder;
             // set ServDataChangeListener
-            talkBinder.registerLis(MainActivity.this);
+//            talkBinder.registerLis(MainActivity.this);
+            talkBinder.registerLis(mapContent);
         }
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
         }
     };
 
-    //----------------------------- life-cycle start ---------------------------
+    /**
+     * ----------------------------- life-cycle start ---------------------------
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //move the marker of me to position of now
-                tencentMap.moveCamera(AnimationOfMap.reFocus(latLng_me));
+                mapContent.reFocusMapToMe();
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -92,57 +92,64 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //！init map -- start！
-        mapView = findViewById(R.id.mapView);
-        tencentMap = mapView.getMap();
-        me = tencentMap.addMarker(new MarkerOptions().position(latLng_me).title("").snippet("DefaultMarker"));
-        //UI setting of map
-        UiSettings uiSettings = tencentMap.getUiSettings();
-        uiSettings.setCompassEnabled(true); //指南针按钮
-        //uiSettings.setMyLocationButtonEnabled(true);// 定位我的位置按钮
-        //！init map -- end！
+        // get the obj of MapContent
+        mapContent = findViewById(R.id.map_content);
 
         //init new task view
         newTask = findViewById(R.id.new_task);
         newTask.setVisibility(View.GONE);
 
-        //register OrientationChangeListener
-        myOrientation = MyOrientation.getInstance();
-        myOrientation.setOnOrientationChangeListener(this);
+        // set presenter for this self
+        mainPresenter = new MainPresenter(this);
+        // check the permission
+        mainPresenter.checkPermission();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mapView.onStart();
-        // start the service
-        Intent startIntent = new Intent(this, MainService.class);
-        startService(startIntent);
+        mapContent.lifeCycleControl(1);
+        // bind and start the service
+        Intent bindIntent = new Intent(this, MainService.class);
+        bindService(bindIntent, connection, BIND_AUTO_CREATE);
         //tencentMap.moveCamera(AnimationOfMap.reFocus(latLng_me)); //移动地图
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        //stop the Service
-        Intent stopIntent = new Intent(this,MainService.class);
-        stopService(stopIntent);
-        mapView.onStop();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume();
+        mapContent.lifeCycleControl(2);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapContent.lifeCycleControl(3);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapContent.lifeCycleControl(4);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mapContent.lifeCycleControl(5);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
-        myOrientation.unRegisterLis();
+        mapContent.lifeCycleControl(6);
+        //unbind the Service
+        unbindService(connection);
     }
-    //----------------------------- life-cycle end ---------------------------
+    /**
+     * ----------------------------- life-cycle end ---------------------------
+     */
+
 
     /**
      * overRide the button of back
@@ -168,14 +175,14 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            talkBinder.testNewTask();
+            if(talkBinder == null){
+                Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");
+            }else {
+                talkBinder.testNewTask();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -204,59 +211,18 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    /**
-     * callback of Service's data
-     * @param latLng longitude and latitude
-     */
-    @Override
-    public void onMyLocationChange(LatLng latLng) {
-        me.setPosition(this.latLng_me = latLng);
-    }
-
-    @Override
-    public void onDestinationChange(LatLng latLng) {
-        destination = tencentMap.addMarker(new MarkerOptions().position(latLng).title("目标").snippet("DefaultMarker"));
-        destination.setPosition(latLng);
-        newTask.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onDestinationFinish() {
-        destination.remove();
-        newTask.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onFireChange() {
-
-    }
 
     /**
-     * callback of MyOrientationListener
-     * @param values 3D float array [-180,180]
+     * callback of presenter to check permission when running
      */
     @Override
-    public void onOrientationChange(float[] values) {
-        //keep maker of me point to the top of screen
-        me.setRotation(-(values[0] + 180));
-    }
-
-
-    /**
-     * 运行时权限动态检测
-     */
-    protected void checkPermission(){
+    public void checkPermission(String[] permissions) {
         if (Build.VERSION.SDK_INT >= 23) {
-            String[] permissions = {
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-            };
             if (checkSelfPermission(permissions[0]) != PackageManager.PERMISSION_GRANTED)
             {
                 requestPermissions(permissions, 0);
@@ -264,15 +230,15 @@ public class MainActivity extends AppCompatActivity
         }
     }
     /**
-     * 权限申请后回调
+     * callback of permission request
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == 1){
-            //权限被允许
+            //allow
         }else {
-            //被拒绝
+            //deny
             Toast.makeText(this,"请允许全部权限!",Toast.LENGTH_LONG).show();
         }
     }

@@ -38,8 +38,8 @@
         <meta-data
             android:name="TencentMapSDK"
             android:value="6RZBZ-XVPRR-HH4WK-W5VMW-L3LMJ-WPFJQ"/>
-        <activity
 
+        <activity
             android:name=".View.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
@@ -49,6 +49,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".Presenter.MainService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
     </application>
 
 </manifest>
