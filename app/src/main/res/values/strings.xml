@@ -1,8 +1,11 @@
 <resources>
-    <string name="app_name">FirePrevention</string>
+    <string name="app_name">森林防火调度系统</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">打开导航栏</string>
+    <string name="navigation_drawer_close">关闭导航栏</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">设置</string>
+    <string name="simulate_des">目的地模拟</string>
+    <string name="simulate_fire">火情模拟</string>
+    <string name="simulate_finish">模拟灭火完成</string>
 </resources>

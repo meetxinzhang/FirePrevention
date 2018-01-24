@@ -29,8 +29,31 @@ public class MainService extends Service implements MyLocation.MyLocationChangeL
             // set ServDataChangeListener
             MainService.this.servDataChangeListener = servDataChangeListener;
         }
+        //test a new task
         public void testNewTask(){
-            servDataChangeListener.onDestinationChange(latLng_des);
+            servDataChangeListener.onDestinationChange(latLng_des,
+                    "请急速前往灭火。",
+                    10,
+                    10);
+        }
+        //test a fire
+        public void testNewFire(){
+            LatLng[] latLngs = {
+                    new LatLng(28.134109,112.99911),
+                    new LatLng(28.134209,112.99901),
+                    new LatLng(28.134209,112.99891),
+                    new LatLng(28.134309,112.99881),
+                    new LatLng(28.134409,112.99871),
+                    new LatLng(28.134509,112.99871),
+                    new LatLng(28.134509,112.99881),
+                    new LatLng(28.134409,112.99891),
+                    new LatLng(28.134309,112.99901),
+                    new LatLng(28.134209,112.99911)};
+            servDataChangeListener.onFireChange(latLngs);
+        }
+        public void testFinish(){
+            servDataChangeListener.onDestinationFinish();
+            servDataChangeListener.onFireChange(null);
         }
     }
 
@@ -67,8 +90,8 @@ public class MainService extends Service implements MyLocation.MyLocationChangeL
     private ServDataChangeListener servDataChangeListener;
     public interface ServDataChangeListener{
         void onMyLocationChange(LatLng latLng);
-        void onDestinationChange(LatLng latLng);
+        void onDestinationChange(LatLng latLng, String sub, int area, int teamnum);
         void onDestinationFinish();
-        void onFireChange();
+        void onFireChange(LatLng[] latLngs);
     }
 }

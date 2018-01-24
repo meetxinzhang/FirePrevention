@@ -6,4 +6,22 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/simulate_des"
+        android:orderInCategory="100"
+        android:title="@string/simulate_des"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/simulate_fire"
+        android:orderInCategory="100"
+        android:title="@string/simulate_fire"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/simulate_finish"
+        android:orderInCategory="100"
+        android:title="@string/simulate_finish"
+        app:showAsAction="never" />
 </menu>

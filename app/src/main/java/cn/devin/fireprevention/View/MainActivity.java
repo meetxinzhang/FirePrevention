@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.tencentmap.mapsdk.maps.MapView;
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity
     MainPresenter mainPresenter;
 
     // View
+    private Toolbar toolbar;
+    private TextView task_sub, area, teamnum;
     private ConstraintLayout newTask;
     private MapContent mapContent;
     private FloatingActionButton fab;
@@ -71,8 +74,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        task_sub = findViewById(R.id.task_sub);
+        area = findViewById(R.id.area);
+        teamnum = findViewById(R.id.teamnum);
 
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +100,7 @@ public class MainActivity extends AppCompatActivity
 
         // get the obj of MapContent
         mapContent = findViewById(R.id.map_content);
+        mapContent.setSelf2Presenter(this);
 
         //init new task view
         newTask = findViewById(R.id.new_task);
@@ -112,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         // bind and start the service
         Intent bindIntent = new Intent(this, MainService.class);
         bindService(bindIntent, connection, BIND_AUTO_CREATE);
-        //tencentMap.moveCamera(AnimationOfMap.reFocus(latLng_me)); //移动地图
+        //tencentMap.moveCamera(AnimationSetting.reFocus(latLng_me)); //移动地图
     }
 
     @Override
@@ -175,16 +182,30 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            if(talkBinder == null){
-                Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");
-            }else {
-                talkBinder.testNewTask();
-            }
-            return true;
+        switch (item.getItemId()){
+            case R.id.simulate_des:
+                if(talkBinder == null){
+                    Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");
+                }else {
+                    talkBinder.testNewTask();
+                }
+                return true;
+            case R.id.simulate_fire:
+                if(talkBinder == null){
+                    Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");
+                }else {
+                    talkBinder.testNewFire();
+                }
+                return true;
+            case R.id.simulate_finish:
+                if(talkBinder == null){
+                    Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");
+                }else {
+                    talkBinder.testFinish();
+                }
+                return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -218,7 +239,7 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
-     * callback of presenter to check permission when running
+     * callback from presenter to check permission when running
      */
     @Override
     public void checkPermission(String[] permissions) {
@@ -230,7 +251,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
     /**
-     * callback of permission request
+     * callback from permission request
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -241,6 +262,24 @@ public class MainActivity extends AppCompatActivity
             //deny
             Toast.makeText(this,"请允许全部权限!",Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * callback from MapContent
+     * @param sub  subject of fire
+     */
+    @Override
+    public void onDestinationChange(String sub,int area,int teamnum) {
+        toolbar.setTitle("新任务！");
+        this.task_sub.setText(sub);
+        this.area.setText(area + "平方米");
+        this.teamnum.setText(teamnum + "人");
+        newTask.setVisibility(View.VISIBLE);
+    }
+    @Override
+    public void onDestinationFinish() {
+        toolbar.setTitle(R.string.app_name);
+        newTask.setVisibility(View.GONE);
     }
 
 }

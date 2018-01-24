@@ -3,6 +3,7 @@ package cn.devin.fireprevention.View;
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.tencent.tencentmap.mapsdk.maps.MapView;
@@ -11,7 +12,9 @@ import com.tencent.tencentmap.mapsdk.maps.UiSettings;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
+import com.tencent.tencentmap.mapsdk.maps.model.Polygon;
 
+import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.Presenter.MyOrientation;
 import cn.devin.fireprevention.R;
@@ -25,10 +28,12 @@ import cn.devin.fireprevention.R;
 public class MapContent extends ConstraintLayout
         implements MainService.ServDataChangeListener,
         MyOrientation.MyOrientationListener{
+    private final static String TAG = "MapContent";
 
     // args
     private boolean isFirstRun = true;
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
+    private DetailContract.MainView mainView;
 
     // Listener
     protected MyOrientation myOrientation;
@@ -69,42 +74,59 @@ public class MapContent extends ConstraintLayout
         super(context,attrs,defStyle);
     }
 
+    /**
+     * get interface's obj of MainView to control MainActivity
+     */
+    protected void setSelf2Presenter(DetailContract.MainView mainView){
+        this.mainView = mainView;
+    }
 
     /**
-     * callback of Service's data
+     * callback from Service's ServDataChangeListener
      * @param latLng longitude and latitude
      */
     @Override
     public void onMyLocationChange(LatLng latLng) {
         me.setPosition(this.latLng_me = latLng);
         if(isFirstRun){
-            tencentMap.moveCamera(AnimationOfMap.reFocus(latLng_me));
+            reFocusMapToMe();
             isFirstRun = false;
         }
     }
 
     @Override
-    public void onDestinationChange(LatLng latLng) {
+    public void onDestinationChange(LatLng latLng,String sub,int area,int teamnum) {
         destination = tencentMap.addMarker(
-                new MarkerOptions().position(latLng).title("目标").snippet("DefaultMarker"));
-        destination.setPosition(latLng);
-
-        //newTask.setVisibility(View.VISIBLE);
+                new MarkerOptions().position(latLng).title("目的地").snippet("DefaultMarker"));
+        // notify MainActivity
+        mainView.onDestinationChange(sub,area,teamnum);
     }
 
     @Override
     public void onDestinationFinish() {
         destination.remove();
-        //newTask.setVisibility(View.GONE);
+        // notify MainActivity
+        mainView.onDestinationFinish();
     }
 
     @Override
-    public void onFireChange() {
-
+    public void onFireChange(LatLng[] latLngs) {
+        Polygon polygon = null;
+        if (latLngs != null){
+            if (polygon == null){
+                polygon = tencentMap.addPolygon(AnimationSetting.getPolygonOptions(latLngs));
+            }else {
+                polygon.setOptions(AnimationSetting.getPolygonOptions(latLngs));
+            }
+        }else {
+            if(polygon != null){
+                polygon.remove();
+            }
+        }
     }
 
     /**
-     * callback of MyOrientationListener
+     * callback from MyOrientationListener
      * @param values 3D float array [-180,180]
      */
     @Override
@@ -118,7 +140,7 @@ public class MapContent extends ConstraintLayout
      * reFocus map to marker of me
      */
     public void reFocusMapToMe(){
-        AnimationOfMap.reFocus(latLng_me);
+        tencentMap.moveCamera(AnimationSetting.reFocus(latLng_me));
     }
 
     /**
@@ -138,13 +160,14 @@ public class MapContent extends ConstraintLayout
                 break;
             case 4:
                 mapView.onStop();
+                myOrientation.unRegisterLis();
+                isFirstRun = true;
                 break;
             case 5:
                 mapView.onRestart();
                 break;
             case 6:
                 mapView.onDestroy();
-                myOrientation.unRegisterLis();
                 break;
         }
     }
