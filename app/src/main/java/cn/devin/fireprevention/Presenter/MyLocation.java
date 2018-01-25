@@ -13,7 +13,7 @@ import cn.devin.fireprevention.MyApplication;
 
 /**
  * Created by Devin on 2017/12/25.
- * 位置传感器
+ * To get location from TencentMap Service
  */
 
 public class MyLocation implements TencentLocationListener {
@@ -54,6 +54,7 @@ public class MyLocation implements TencentLocationListener {
             4-无法将WGS84坐标转换成GCJ-02坐标时的定位失败
             404-未知原因引起的定位失败
              */
+            myLocationChangeListener.onMyLocationChange(latLng);
             Log.d(TAG, "onLocationChanged: "+i);
         }
     }

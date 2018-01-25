@@ -4,6 +4,7 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 
 /**
  * Created by Devin on 2017/12/27.
+ * model of Task
  */
 
 public class MyTask {

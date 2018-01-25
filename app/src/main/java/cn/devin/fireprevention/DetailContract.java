@@ -1,31 +1,32 @@
 package cn.devin.fireprevention;
 
-import android.preference.PreferenceActivity;
-
+import com.tencent.lbssearch.object.Location;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
+
+import java.util.List;
 
 /**
  * Created by Devin on 2018/1/23.
+ * Manage all MVP-Architecture interface
  */
 
 public interface DetailContract {
 
-    interface MainView extends BaseView{
+    interface MainVi extends BaseView{
         void checkPermission(String[] permissions);
         void onDestinationChange(String sub,int area,int teamnum);
         void onDestinationFinish();
     }
 
-
-    interface MainPresenter extends BasePresenter{
+    interface MainPre extends BasePresenter{
         void checkPermission();
     }
 
-    interface MapContentView extends BaseView{
-        void onRouteChange(Object object);
+    interface MapContVi extends BaseView{
+        void onRouteChange(List<Location> list);
     }
 
-    interface MapContentPresenter extends BasePresenter{
+    interface MapContPre extends BasePresenter{
         void getRoute(LatLng me, LatLng des);
     }
 

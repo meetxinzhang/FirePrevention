@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * Created by Devin on 2018/1/21.
+ * model of fire
  */
 
 public class Fire {

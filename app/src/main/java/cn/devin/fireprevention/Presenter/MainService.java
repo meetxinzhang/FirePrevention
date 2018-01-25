@@ -11,8 +11,8 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 
 /**
  * Created by Devin on 2017/12/25.
- * 后台服务类
- * 负责网络通信
+ * Service of this app
+ * communicate with WebService
  */
 
 public class MainService extends Service implements MyLocation.MyLocationChangeListener{

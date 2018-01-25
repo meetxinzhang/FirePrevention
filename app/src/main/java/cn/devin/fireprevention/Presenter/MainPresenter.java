@@ -4,12 +4,13 @@ import cn.devin.fireprevention.DetailContract;
 
 /**
  * Created by Devin on 2018/1/22.
+ * presenter belongs to MainActivity.
  */
 
-public class MainPresenter implements DetailContract.MainPresenter{
-    private DetailContract.MainView mainView;
+public class MainPresenter implements DetailContract.MainPre{
+    private DetailContract.MainVi mainView;
 
-    public MainPresenter(DetailContract.MainView mainView){
+    public MainPresenter(DetailContract.MainVi mainView){
        this.mainView = mainView;
     }
 

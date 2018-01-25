@@ -10,7 +10,7 @@ import cn.devin.fireprevention.MyApplication;
 
 /**
  * Created by Devin on 2017/12/19.
- * 方向传感器，单例模式
+ * To get Orientation from sensor
  */
 
 public class MyOrientation implements SensorEventListener{

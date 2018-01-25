@@ -23,22 +23,19 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tencent.tencentmap.mapsdk.maps.MapView;
-import com.tencent.tencentmap.mapsdk.maps.TencentMap;
-import com.tencent.tencentmap.mapsdk.maps.UiSettings;
-import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
-import com.tencent.tencentmap.mapsdk.maps.model.Marker;
-import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
-
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Presenter.MainPresenter;
 import cn.devin.fireprevention.Presenter.MainService;
-import cn.devin.fireprevention.Presenter.MyOrientation;
 import cn.devin.fireprevention.R;
+
+/**
+ * Created by Devin on 2017/12/19.
+ * Main Activity
+ */
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        DetailContract.MainView{
+        DetailContract.MainVi{
 
     // Args
     private final String TAG = "MainActivity";
