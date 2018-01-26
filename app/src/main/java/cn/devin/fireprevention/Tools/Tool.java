@@ -1,5 +1,7 @@
 package cn.devin.fireprevention.Tools;
 
+import android.graphics.Bitmap;
+
 import com.tencent.map.geolocation.TencentLocation;
 import com.tencent.tencentmap.mapsdk.maps.model.BitmapDescriptor;
 import com.tencent.tencentmap.mapsdk.maps.model.BitmapDescriptorFactory;
@@ -24,8 +26,17 @@ public class Tool {
     public static BitmapDescriptor getIcon(int r){
         BitmapDescriptor bitmapDescriptor =
                 BitmapDescriptorFactory.fromResource(r);
-        bitmapDescriptor.getBitmap(MyApplication.getContext()).setWidth(10);
-        bitmapDescriptor.getBitmap(MyApplication.getContext()).setHeight(10);
+
+//        Bitmap bitmap = bitmapDescriptor.getBitmap(MyApplication.getContext());
+//
+//        if (bitmap.isMutable()){
+//            bitmap.setHeight(30);
+//            bitmap.setWidth(30);
+//        }else {
+//            bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+//            bitmap.setHeight(30);
+//            bitmap.setWidth(30);
+//        }
 
         return bitmapDescriptor;
     }

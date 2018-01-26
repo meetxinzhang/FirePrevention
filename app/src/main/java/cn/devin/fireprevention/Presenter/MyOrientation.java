@@ -22,6 +22,7 @@ public class MyOrientation implements SensorEventListener{
 
     private float[] accelerometerValues = new float[3];
     private float[] magneticFieldValues = new float[3];
+
     private float lastOrient = 0;
 
     /**
@@ -49,6 +50,8 @@ public class MyOrientation implements SensorEventListener{
         // 注册监听
         mSensorManager.registerListener(this, accelerometer, Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, magnetic, Sensor.TYPE_MAGNETIC_FIELD);
+
+
     }
 
     /**
@@ -73,30 +76,9 @@ public class MyOrientation implements SensorEventListener{
         values[1] = (float) Math.toDegrees(values[1]);
         values[2] = (float) Math.toDegrees(values[2]);
 
-        //回调接口
-        if(Math.abs(lastOrient - values[0]) > 3) {
-            myOrientationListener.onOrientationChange(values);
-        }
+        myOrientationListener.onOrientationChange(lastOrient, values[0]);
 
-        //Log.d(TAG, "calculateOrientation: " + values[0]);
-//        if (values[0] >= -5 && values[0] < 5) {
-//            Toast.makeText(MyApplication.getContext(),"正北",Toast.LENGTH_SHORT).show();
-//        } else if (values[0] >= 5 && values[0] < 85) {
-//            Toast.makeText(MyApplication.getContext(),"东北",Toast.LENGTH_SHORT).show();
-//        } else if (values[0] >= 85 && values[0] <= 95) {
-//            Toast.makeText(MyApplication.getContext(),"正东",Toast.LENGTH_SHORT).show();
-//        } else if (values[0] >= 95 && values[0] < 175) {
-//            Toast.makeText(MyApplication.getContext(),"东南",Toast.LENGTH_SHORT).show();
-//        } else if ((values[0] >= 175 && values[0] <= 180)
-//                || (values[0]) >= -180 && values[0] < -175) {
-//            Toast.makeText(MyApplication.getContext(),"正南",Toast.LENGTH_SHORT).show();
-//        } else if (values[0] >= -175 && values[0] < -95) {
-//            Toast.makeText(MyApplication.getContext(),"西南",Toast.LENGTH_SHORT).show();
-//        } else if (values[0] >= -95 && values[0] < -85) {
-//            Toast.makeText(MyApplication.getContext(),"正西",Toast.LENGTH_SHORT).show();
-//        } else if (values[0] >= -85 && values[0] < -5) {
-//            Toast.makeText(MyApplication.getContext(),"西北",Toast.LENGTH_SHORT).show();
-//        }
+        lastOrient = values[0];
     }
 
     /**
@@ -124,8 +106,11 @@ public class MyOrientation implements SensorEventListener{
      * 接口，回传方向角
      */
     private MyOrientationListener myOrientationListener;
+
+
+
     public interface MyOrientationListener{
-        void onOrientationChange(float[] values);
+        void onOrientationChange(float from, float to);
     }
     public void setOnOrientationChangeListener(MyOrientationListener myOrientationListener){
         this.myOrientationListener = myOrientationListener;

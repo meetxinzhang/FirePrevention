@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //move the marker of me to position of now
-                mapContent.reFocusMapToMe();
+                mapContent.padLockView();
             }
         });
 
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView =  findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // get the obj of MapContent

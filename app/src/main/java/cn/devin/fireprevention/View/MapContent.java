@@ -1,17 +1,18 @@
 package cn.devin.fireprevention.View;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 
-import com.tencent.lbssearch.TencentSearch;
 import com.tencent.lbssearch.object.Location;
 import com.tencent.tencentmap.mapsdk.maps.MapView;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
-import com.tencent.tencentmap.mapsdk.maps.model.BitmapDescriptor;
 import com.tencent.tencentmap.mapsdk.maps.model.BitmapDescriptorFactory;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
@@ -37,11 +38,11 @@ import cn.devin.fireprevention.Tools.Tool;
 public class MapContent extends ConstraintLayout
         implements MainService.ServDataChangeListener,
         MyOrientation.MyOrientationListener,
-        DetailContract.MapContVi{
+        DetailContract.MapContVi,View.OnTouchListener{
     private final static String TAG = "MapContent";
 
     // args
-    private boolean isFirstRun = true;
+    private float rotate = 0;
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
     private DetailContract.MainVi mainView;
 
@@ -50,8 +51,10 @@ public class MapContent extends ConstraintLayout
 
     //presenter
     private MapContentPresenter mapContentPresenter;
+    private AnimationSetting aniSet;
 
     // View
+    private boolean lockView = true;
     protected MapView mapView;
     protected TencentMap tencentMap;
 
@@ -60,12 +63,14 @@ public class MapContent extends ConstraintLayout
     private Marker destination;
     private Polygon polygon;
     private Polyline polyline;
+
     /**
      * init from xml, so should use the second constructor method
      */
     public MapContent(Context context) {
         super(context);
     }
+    @SuppressLint("ClickableViewAccessibility")
     public MapContent(Context context, AttributeSet attrs){
         super(context,attrs);
         LayoutInflater.from(context).inflate(R.layout.content_main,this);
@@ -78,6 +83,7 @@ public class MapContent extends ConstraintLayout
 
         //！init map -- start！
         mapView = findViewById(R.id.mapView);
+        mapView.setOnTouchListener(this);
         tencentMap = mapView.getMap();
         me = tencentMap.addMarker(
                 new MarkerOptions().position(latLng_me).title("").snippet("DefaultMarker"));
@@ -88,6 +94,8 @@ public class MapContent extends ConstraintLayout
         //uiSettings.setZoomControlsEnabled(true);
         //uiSettings.setMyLocationButtonEnabled(true);// 定位我的位置按钮
         //！init map -- end！
+
+        aniSet = new AnimationSetting(tencentMap);
     }
     public MapContent(Context context, AttributeSet attrs, int defStyle){
         super(context,attrs,defStyle);
@@ -100,16 +108,32 @@ public class MapContent extends ConstraintLayout
         this.mainView = mainView;
     }
 
+
+    /**
+     * callback from MyOrientationListener
+     */
+    @Override
+    public void onOrientationChange(float from, float to) {
+        this.rotate = to;
+        if (lockView){
+            aniSet.reFocus(latLng_me, this.rotate, lockView);
+            me.setRotation(-45);
+        }else {
+            me.setAnimation(aniSet.getRotateAnimation(from+90, to+90));
+            me.startAnimation();
+        }
+    }
+
     /**
      * callback from Service's ServDataChangeListener
      * @param latLng longitude and latitude
      */
     @Override
     public void onMyLocationChange(LatLng latLng) {
-        me.setPosition(this.latLng_me = latLng);
-        if(isFirstRun){
-            reFocusMapToMe();
-            isFirstRun = false;
+        this.latLng_me = latLng;
+        me.setPosition(this.latLng_me);
+        if (lockView){
+            aniSet.reFocus(latLng_me, rotate, lockView);
         }
     }
 
@@ -117,7 +141,7 @@ public class MapContent extends ConstraintLayout
     public void onDestinationChange(LatLng latLng,String sub,int area,int teamnum) {
         //marker
         destination = tencentMap.addMarker(
-                new MarkerOptions().position(latLng).title("目的地").snippet("DefaultMarker"));
+                new MarkerOptions().position(latLng).title("目的地"));
         destination.setIcon(Tool.getIcon(R.drawable.location));
         //route
         mapContentPresenter.getRoute(latLng_me, latLng);
@@ -143,21 +167,11 @@ public class MapContent extends ConstraintLayout
         }
         if (latLngs != null){
             if (polygon == null){
-                polygon = tencentMap.addPolygon(AnimationSetting.getPolygonOptions(latLngs));
+                polygon = tencentMap.addPolygon(OverLayerSetting.getPolygonOptions(latLngs));
             }else {
-                polygon.setOptions(AnimationSetting.getPolygonOptions(latLngs));
+                polygon.setOptions(OverLayerSetting.getPolygonOptions(latLngs));
             }
         }
-    }
-
-    /**
-     * callback from MyOrientationListener
-     * @param values 3D float array [-180,180]
-     */
-    @Override
-    public void onOrientationChange(float[] values) {
-        //keep maker of me point to the top of screen
-        me.setRotation(-(values[0]-95));
     }
 
     /**
@@ -166,15 +180,26 @@ public class MapContent extends ConstraintLayout
      */
     @Override
     public void onRouteChange(List<Location> list) {
-        polyline = tencentMap.addPolyline(AnimationSetting.drawLine(list));
+        polyline = tencentMap.addPolyline(OverLayerSetting.drawLine(list));
     }
 
 
     /**
-     * reFocus map to marker of me
+     * control lockView
      */
-    public void reFocusMapToMe(){
-        tencentMap.moveCamera(AnimationSetting.reFocus(latLng_me));
+    public void padLockView(){
+        if (lockView){
+            lockView = false;
+        }else {
+            lockView = true;
+        }
+    }
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (view.getId() == R.id.mapView){
+            lockView = false;
+        }
+        return true;
     }
 
     /**
@@ -185,6 +210,7 @@ public class MapContent extends ConstraintLayout
         switch (i){
             case 1:
                 mapView.onStart();
+                lockView = true;
                 break;
             case 2:
                 mapView.onResume();
@@ -194,15 +220,15 @@ public class MapContent extends ConstraintLayout
                 break;
             case 4:
                 mapView.onStop();
-                myOrientation.unRegisterLis();
-                isFirstRun = true;
                 break;
             case 5:
                 mapView.onRestart();
                 break;
             case 6:
                 mapView.onDestroy();
+                myOrientation.unRegisterLis();
                 break;
         }
     }
+
 }
