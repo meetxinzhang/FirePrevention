@@ -6,14 +6,12 @@ import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
 
 import com.tencent.lbssearch.object.Location;
 import com.tencent.tencentmap.mapsdk.maps.MapView;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
-import com.tencent.tencentmap.mapsdk.maps.model.BitmapDescriptorFactory;
+import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
@@ -38,11 +36,11 @@ import cn.devin.fireprevention.Tools.Tool;
 public class MapContent extends ConstraintLayout
         implements MainService.ServDataChangeListener,
         MyOrientation.MyOrientationListener,
-        DetailContract.MapContVi,View.OnTouchListener{
+        DetailContract.MapContVi,
+        TencentMap.OnCameraChangeListener{
     private final static String TAG = "MapContent";
 
     // args
-    private float rotate = 0;
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
     private DetailContract.MainVi mainView;
 
@@ -59,6 +57,9 @@ public class MapContent extends ConstraintLayout
     protected TencentMap tencentMap;
 
     //overLayer
+    private float rotate = 0;
+    private float lastRotate = 0;
+
     private Marker me;
     private Marker destination;
     private Polygon polygon;
@@ -83,11 +84,11 @@ public class MapContent extends ConstraintLayout
 
         //！init map -- start！
         mapView = findViewById(R.id.mapView);
-        mapView.setOnTouchListener(this);
         tencentMap = mapView.getMap();
+        tencentMap.setOnCameraChangeListener(this);
         me = tencentMap.addMarker(
                 new MarkerOptions().position(latLng_me).title("").snippet("DefaultMarker"));
-        me.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.airplane));
+        me.setIcon(Tool.getIcon(R.drawable.airplane));
         //UI setting of map
         UiSettings uiSettings = tencentMap.getUiSettings();
         uiSettings.setCompassEnabled(true); //指南针按钮
@@ -114,6 +115,7 @@ public class MapContent extends ConstraintLayout
      */
     @Override
     public void onOrientationChange(float from, float to) {
+        this.lastRotate = from;
         this.rotate = to;
         if (lockView){
             aniSet.reFocus(latLng_me, this.rotate, lockView);
@@ -195,11 +197,14 @@ public class MapContent extends ConstraintLayout
         }
     }
     @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        if (view.getId() == R.id.mapView){
-            lockView = false;
-        }
-        return true;
+    public void onCameraChange(CameraPosition cameraPosition) {
+        lockView = false;
+        float newRotate = cameraPosition.bearing;
+        Log.d(TAG, "onCameraChange: "+ newRotate);
+    }
+    @Override
+    public void onCameraChangeFinished(CameraPosition cameraPosition) {
+
     }
 
     /**
@@ -230,5 +235,4 @@ public class MapContent extends ConstraintLayout
                 break;
         }
     }
-
 }

@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -247,6 +248,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
     /**
      * callback from permission request
      */
@@ -278,7 +280,6 @@ public class MainActivity extends AppCompatActivity
         toolbar.setTitle(R.string.app_name);
         newTask.setVisibility(View.GONE);
     }
-
 }
 
 

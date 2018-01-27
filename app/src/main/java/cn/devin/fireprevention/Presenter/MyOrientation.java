@@ -23,6 +23,7 @@ public class MyOrientation implements SensorEventListener{
     private float[] accelerometerValues = new float[3];
     private float[] magneticFieldValues = new float[3];
 
+    private boolean clockwise;
     private float lastOrient = 0;
 
     /**
@@ -72,10 +73,10 @@ public class MyOrientation implements SensorEventListener{
                 magneticFieldValues);
         SensorManager.getOrientation(R, values);
         //将弧度切换为角度
-        values[0] = (float) Math.toDegrees(values[0]);
-        values[1] = (float) Math.toDegrees(values[1]);
-        values[2] = (float) Math.toDegrees(values[2]);
-
+        float rotate  = (float) Math.toDegrees(values[0]);
+        if (rotate > lastOrient){
+            clockwise = true;
+        }
         myOrientationListener.onOrientationChange(lastOrient, values[0]);
 
         lastOrient = values[0];
