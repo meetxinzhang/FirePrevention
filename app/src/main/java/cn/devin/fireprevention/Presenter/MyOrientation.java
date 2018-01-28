@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 import cn.devin.fireprevention.MyApplication;
 
@@ -15,6 +16,7 @@ import cn.devin.fireprevention.MyApplication;
 
 public class MyOrientation implements SensorEventListener{
     private static final String TAG = "MyOrientation";
+    private float bias = 0;
 
     private SensorManager mSensorManager;
     private Sensor accelerometer; // 加速度传感器
@@ -22,8 +24,6 @@ public class MyOrientation implements SensorEventListener{
 
     private float[] accelerometerValues = new float[3];
     private float[] magneticFieldValues = new float[3];
-
-    private boolean clockwise;
     private float lastOrient = 0;
 
     /**
@@ -73,11 +73,13 @@ public class MyOrientation implements SensorEventListener{
                 magneticFieldValues);
         SensorManager.getOrientation(R, values);
         //将弧度切换为角度
-        float rotate  = (float) Math.toDegrees(values[0]);
-        if (rotate > lastOrient){
-            clockwise = true;
+        values[0] = (float) Math.toDegrees(values[0]);
+
+        if (values[0] < 0){
+            values[0] += 360;
         }
-        myOrientationListener.onOrientationChange(lastOrient, values[0]);
+
+        myOrientationListener.onOrientationChange(values[0] + bias);
 
         lastOrient = values[0];
     }
@@ -111,7 +113,7 @@ public class MyOrientation implements SensorEventListener{
 
 
     public interface MyOrientationListener{
-        void onOrientationChange(float from, float to);
+        void onOrientationChange(float rotate);
     }
     public void setOnOrientationChangeListener(MyOrientationListener myOrientationListener){
         this.myOrientationListener = myOrientationListener;

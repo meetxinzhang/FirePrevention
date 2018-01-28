@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //move the marker of me to position of now
-                mapContent.padLockView();
+                AnimationSetting.lockViewSwitch(2);
             }
         });
 

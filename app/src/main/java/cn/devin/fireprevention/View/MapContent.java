@@ -4,14 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.TextView;
 
 import com.tencent.lbssearch.object.Location;
 import com.tencent.tencentmap.mapsdk.maps.MapView;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
-import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
@@ -36,10 +35,8 @@ import cn.devin.fireprevention.Tools.Tool;
 public class MapContent extends ConstraintLayout
         implements MainService.ServDataChangeListener,
         MyOrientation.MyOrientationListener,
-        DetailContract.MapContVi,
-        TencentMap.OnCameraChangeListener{
+        DetailContract.MapContVi{
     private final static String TAG = "MapContent";
-
     // args
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
     private DetailContract.MainVi mainView;
@@ -52,14 +49,11 @@ public class MapContent extends ConstraintLayout
     private AnimationSetting aniSet;
 
     // View
-    private boolean lockView = true;
     protected MapView mapView;
     protected TencentMap tencentMap;
+    private TextView angle;
 
     //overLayer
-    private float rotate = 0;
-    private float lastRotate = 0;
-
     private Marker me;
     private Marker destination;
     private Polygon polygon;
@@ -85,7 +79,6 @@ public class MapContent extends ConstraintLayout
         //！init map -- start！
         mapView = findViewById(R.id.mapView);
         tencentMap = mapView.getMap();
-        tencentMap.setOnCameraChangeListener(this);
         me = tencentMap.addMarker(
                 new MarkerOptions().position(latLng_me).title("").snippet("DefaultMarker"));
         me.setIcon(Tool.getIcon(R.drawable.airplane));
@@ -96,7 +89,8 @@ public class MapContent extends ConstraintLayout
         //uiSettings.setMyLocationButtonEnabled(true);// 定位我的位置按钮
         //！init map -- end！
 
-        aniSet = new AnimationSetting(tencentMap);
+        angle = findViewById(R.id.angle);
+        aniSet = new AnimationSetting(tencentMap, me);
     }
     public MapContent(Context context, AttributeSet attrs, int defStyle){
         super(context,attrs,defStyle);
@@ -109,21 +103,14 @@ public class MapContent extends ConstraintLayout
         this.mainView = mainView;
     }
 
-
     /**
      * callback from MyOrientationListener
      */
     @Override
-    public void onOrientationChange(float from, float to) {
-        this.lastRotate = from;
-        this.rotate = to;
-        if (lockView){
-            aniSet.reFocus(latLng_me, this.rotate, lockView);
-            me.setRotation(-45);
-        }else {
-            me.setAnimation(aniSet.getRotateAnimation(from+90, to+90));
-            me.startAnimation();
-        }
+    public void onOrientationChange(float rotate) {
+        aniSet.reFocusMap(latLng_me, rotate);
+        aniSet.spin_Jump_MyEyesClosed(rotate);
+        angle.setText("from: " + rotate);
     }
 
     /**
@@ -134,9 +121,6 @@ public class MapContent extends ConstraintLayout
     public void onMyLocationChange(LatLng latLng) {
         this.latLng_me = latLng;
         me.setPosition(this.latLng_me);
-        if (lockView){
-            aniSet.reFocus(latLng_me, rotate, lockView);
-        }
     }
 
     @Override
@@ -187,27 +171,6 @@ public class MapContent extends ConstraintLayout
 
 
     /**
-     * control lockView
-     */
-    public void padLockView(){
-        if (lockView){
-            lockView = false;
-        }else {
-            lockView = true;
-        }
-    }
-    @Override
-    public void onCameraChange(CameraPosition cameraPosition) {
-        lockView = false;
-        float newRotate = cameraPosition.bearing;
-        Log.d(TAG, "onCameraChange: "+ newRotate);
-    }
-    @Override
-    public void onCameraChangeFinished(CameraPosition cameraPosition) {
-
-    }
-
-    /**
      * life-cycle of Activity
      * @param i state-code
      */
@@ -215,10 +178,10 @@ public class MapContent extends ConstraintLayout
         switch (i){
             case 1:
                 mapView.onStart();
-                lockView = true;
                 break;
             case 2:
                 mapView.onResume();
+                AnimationSetting.lockViewSwitch(1);
                 break;
             case 3:
                 mapView.onPause();

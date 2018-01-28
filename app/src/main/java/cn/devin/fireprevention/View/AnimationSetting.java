@@ -5,6 +5,7 @@ import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.model.CameraPosition;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
+import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.RotateAnimation;
 
 
@@ -13,21 +14,27 @@ import com.tencent.tencentmap.mapsdk.maps.model.RotateAnimation;
  * packaging some animation setting for map.
  */
 
-public class AnimationSetting {
+public class AnimationSetting implements TencentMap.OnCameraChangeListener{
     private TencentMap tencentMap;
+    private Marker me;
 
-    AnimationSetting(TencentMap tencentMap){
+    private float lastMarkerRotate = 0;
+    private float biasOfPicture = -45;
+    private float biasOfMap = 0;
+    private static boolean lockView = true;
+
+    AnimationSetting(TencentMap tencentMap, Marker me){
         this.tencentMap = tencentMap;
+        this.me = me;
+        this.tencentMap.setOnCameraChangeListener(this);
     }
 
     /**
      * refocus the map centre
      * @param latLng location of destination
      */
-    public void reFocus(LatLng latLng, float to, boolean lockView){
+    public void reFocusMap(LatLng latLng, float rotate){
         CameraUpdate cameraUpdate;
-
-        float newTo = castRotate(to);
 
         if (lockView){
             cameraUpdate =
@@ -35,51 +42,55 @@ public class AnimationSetting {
                             latLng, //new location ，double
                             19, //level of zoom
                             45f, //俯仰角 0~45° (垂直地图时为0)
-                            -newTo)); //偏航角 0~360° (正北方为0)
-        }else {
-            cameraUpdate =
-                    CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                            latLng, //new location ，double
-                            19, //level of zoom
-                            45f, //俯仰角 0~45° (垂直地图时为0)
-                            0)); //偏航角 0~360° (正北方为0)
+                            -rotate)); //偏航角 0~360° (正北方为0)
+            tencentMap.animateCamera(cameraUpdate);
         }
-        //tencentMap.moveCamera(cameraUpdate);
-        tencentMap.animateCamera(cameraUpdate);
     }
 
 
     /**
-     * marker 旋转动画
+     * marker's Rotation animation
      */
-    public RotateAnimation getRotateAnimation(float from, float to){
-
-        RotateAnimation animation;
-
-        if (to > from){
-            animation = new RotateAnimation(
-                    from,
-                    to,
-                    0,
-                    0,
-                    0);
+    public void spin_Jump_MyEyesClosed(float rotate){
+        if (lockView){
+            me.setRotation(biasOfPicture);
         }else {
-            animation = new RotateAnimation(
-                    to,
-                    from,
+            RotateAnimation animation = new RotateAnimation(
+                    lastMarkerRotate +biasOfPicture +biasOfMap,
+                    rotate +biasOfPicture +biasOfMap,
                     0,
                     0,
                     0);
+
+            me.setAnimation(animation);
+            me.startAnimation();
         }
-        return animation;
+
+        lastMarkerRotate = rotate;
     }
 
-
-    private float castRotate(float to){
-        if (to < 0){
-            to = to + 360;
-        }
-        return to;
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        biasOfMap = cameraPosition.bearing;
+        lockView = false;
     }
 
+    @Override
+    public void onCameraChangeFinished(CameraPosition cameraPosition) {
+
+    }
+
+    public static void lockViewSwitch(int lock){
+        switch (lock){
+            case 0:lockView = false;break;
+            case 1:lockView = true;break;
+            case 2:
+                if (lockView){
+                    lockView = false;
+                }else {
+                    lockView = true;
+                }
+                break;
+        }
+    }
 }
