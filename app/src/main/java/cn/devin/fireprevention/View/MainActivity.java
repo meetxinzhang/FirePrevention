@@ -36,7 +36,7 @@ import cn.devin.fireprevention.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        DetailContract.MainVi{
+        DetailContract.MainVi, View.OnClickListener{
 
     // Args
     private final String TAG = "MainActivity";
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
     private TextView task_sub, area, teamnum;
     private ConstraintLayout newTask;
     private MapContent mapContent;
-    private FloatingActionButton fab;
+    private FloatingActionButton fab_lock, fab_map;
 
     // control Service by binder
     private MainService.TalkBinder talkBinder;
@@ -78,14 +78,8 @@ public class MainActivity extends AppCompatActivity
         area = findViewById(R.id.area);
         teamnum = findViewById(R.id.teamnum);
 
-        fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //move the marker of me to position of now
-                AnimationSetting.lockViewSwitch(2);
-            }
-        });
+        fab_lock = findViewById(R.id.fab_lock);
+        fab_map = findViewById(R.id.fab_type);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -279,6 +273,18 @@ public class MainActivity extends AppCompatActivity
     public void onDestinationFinish() {
         toolbar.setTitle(R.string.app_name);
         newTask.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.fab_lock:
+                AnimationSetting.lockViewSwitch(2);
+                break;
+            case R.id.fab_type:
+                mapContent.changeMapType();
+                break;
+        }
     }
 }
 

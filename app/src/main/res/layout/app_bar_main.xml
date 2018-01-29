@@ -30,18 +30,30 @@
     <cn.devin.fireprevention.View.MapContent
         android:id="@+id/map_content"
         android:layout_width="match_parent"
-        android:layout_height="660dp" />
+        android:layout_height="match_parent" />
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_type"
+        android:onClick="onClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-       android:layout_marginRight="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/bottom_bar"
+        android:layout_marginBottom="@dimen/fab2_margin"
+        android:layout_marginRight="@dimen/fab1_margin"
+        app:layout_anchor="@+id/fab_lock"
+        app:layout_anchorGravity="right|bottom"
         app:srcCompat="@drawable/plus" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_lock"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+       android:layout_marginRight="@dimen/fab1_margin"
+        android:layout_marginBottom="@dimen/fab1_margin"
+        app:srcCompat="@drawable/lock_view" />
 
 
 </android.support.design.widget.CoordinatorLayout>

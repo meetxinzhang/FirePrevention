@@ -34,10 +34,9 @@ public class AnimationSetting implements TencentMap.OnCameraChangeListener{
      * @param latLng location of destination
      */
     public void reFocusMap(LatLng latLng, float rotate){
-        CameraUpdate cameraUpdate;
 
         if (lockView){
-            cameraUpdate =
+            CameraUpdate cameraUpdate =
                     CameraUpdateFactory.newCameraPosition(new CameraPosition(
                             latLng, //new location ，double
                             19, //level of zoom
@@ -72,7 +71,7 @@ public class AnimationSetting implements TencentMap.OnCameraChangeListener{
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         biasOfMap = cameraPosition.bearing;
-        lockView = false;
+        //lockView = false;
     }
 
     @Override

@@ -81,7 +81,7 @@ public class MapContent extends ConstraintLayout
         tencentMap = mapView.getMap();
         me = tencentMap.addMarker(
                 new MarkerOptions().position(latLng_me).title("").snippet("DefaultMarker"));
-        me.setIcon(Tool.getIcon(R.drawable.airplane));
+        me.setIcon(Tool.getIcon(R.drawable.airplane_blue));
         //UI setting of map
         UiSettings uiSettings = tencentMap.getUiSettings();
         uiSettings.setCompassEnabled(true); //指南针按钮
@@ -110,7 +110,7 @@ public class MapContent extends ConstraintLayout
     public void onOrientationChange(float rotate) {
         aniSet.reFocusMap(latLng_me, rotate);
         aniSet.spin_Jump_MyEyesClosed(rotate);
-        angle.setText("from: " + rotate);
+        //angle.setText("from: " + rotate);
     }
 
     /**
@@ -128,7 +128,7 @@ public class MapContent extends ConstraintLayout
         //marker
         destination = tencentMap.addMarker(
                 new MarkerOptions().position(latLng).title("目的地"));
-        destination.setIcon(Tool.getIcon(R.drawable.location));
+        destination.setIcon(Tool.getIcon(R.drawable.location_blue));
         //route
         mapContentPresenter.getRoute(latLng_me, latLng);
         // notify MainActivity
@@ -167,6 +167,30 @@ public class MapContent extends ConstraintLayout
     @Override
     public void onRouteChange(List<Location> list) {
         polyline = tencentMap.addPolyline(OverLayerSetting.drawLine(list));
+    }
+
+    /**
+     * change the type of map
+     */
+    public void changeMapType(){
+
+        switch (tencentMap.getMapType()) {
+            case TencentMap.MAP_TYPE_NORMAL:
+                tencentMap.setMapType(TencentMap.MAP_TYPE_SATELLITE);
+                me.setIcon(Tool.getIcon(R.drawable.airplane_yellow));
+                if (destination != null){
+                    destination.setIcon(Tool.getIcon(R.drawable.location_yellow));
+                }
+                break;
+            case TencentMap.MAP_TYPE_SATELLITE:
+                tencentMap.setMapType(TencentMap.MAP_TYPE_NORMAL);
+                me.setIcon(Tool.getIcon(R.drawable.airplane_blue));
+                if (destination != null){
+                    destination.setIcon(Tool.getIcon(R.drawable.location_blue));
+                }
+                break;
+        }
+
     }
 
 
