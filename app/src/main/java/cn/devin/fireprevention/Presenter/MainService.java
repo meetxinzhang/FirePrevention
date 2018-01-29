@@ -39,21 +39,21 @@ public class MainService extends Service implements MyLocation.MyLocationChangeL
         //test a fire
         public void testNewFire(){
             LatLng[] latLngs = {
-                    new LatLng(28.134109,112.99911),
-                    new LatLng(28.134209,112.99901),
-                    new LatLng(28.134209,112.99891),
-                    new LatLng(28.134309,112.99881),
-                    new LatLng(28.134409,112.99871),
-                    new LatLng(28.134509,112.99871),
-                    new LatLng(28.134509,112.99881),
-                    new LatLng(28.134409,112.99891),
-                    new LatLng(28.134309,112.99901),
-                    new LatLng(28.134209,112.99911)};
+                    new LatLng(28.135109,112.99911),
+                    new LatLng(28.135209,112.99901),
+                    new LatLng(28.135209,112.99891),
+                    new LatLng(28.135309,112.99881),
+                    new LatLng(28.135409,112.99871),
+                    new LatLng(28.135509,112.99871),
+                    new LatLng(28.135509,112.99881),
+                    new LatLng(28.135409,112.99891),
+                    new LatLng(28.135309,112.99901),
+                    new LatLng(28.135209,112.99911)};
             servDataChangeListener.onFireChange(latLngs);
         }
         public void testFinish(){
             servDataChangeListener.onDestinationFinish();
-            servDataChangeListener.onFireChange(null);
+            servDataChangeListener.onFireFinish();
         }
     }
 
@@ -93,5 +93,6 @@ public class MainService extends Service implements MyLocation.MyLocationChangeL
         void onDestinationChange(LatLng latLng, String sub, int area, int teamnum);
         void onDestinationFinish();
         void onFireChange(LatLng[] latLngs);
+        void onFireFinish();
     }
 }

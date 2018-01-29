@@ -148,9 +148,6 @@ public class MapContent extends ConstraintLayout
 
     @Override
     public void onFireChange(LatLng[] latLngs) {
-        if (latLngs == null){
-            polygon.remove();
-        }
         if (latLngs != null){
             if (polygon == null){
                 polygon = tencentMap.addPolygon(OverLayerSetting.getPolygonOptions(latLngs));
@@ -159,6 +156,14 @@ public class MapContent extends ConstraintLayout
             }
         }
     }
+
+    @Override
+    public void onFireFinish() {
+        if (polygon != null){
+            polygon.remove();
+        }
+    }
+
 
     /**
      * callback from MapContentPresenter

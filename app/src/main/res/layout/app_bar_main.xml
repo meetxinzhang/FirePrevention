@@ -43,7 +43,7 @@
         android:layout_marginRight="@dimen/fab1_margin"
         app:layout_anchor="@+id/fab_lock"
         app:layout_anchorGravity="right|bottom"
-        app:srcCompat="@drawable/plus" />
+        app:srcCompat="@drawable/map_type" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_lock"
