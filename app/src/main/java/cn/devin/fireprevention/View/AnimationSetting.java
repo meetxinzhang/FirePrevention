@@ -1,5 +1,7 @@
 package cn.devin.fireprevention.View;
 
+import android.os.SystemClock;
+
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdate;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
@@ -18,6 +20,7 @@ public class AnimationSetting implements TencentMap.OnCameraChangeListener{
     private TencentMap tencentMap;
     private Marker me;
 
+    private float lastMapRotate = 0;
     private float lastMarkerRotate = 0;
     private float biasOfPicture = -45;
     private float biasOfMap = 0;
@@ -33,22 +36,46 @@ public class AnimationSetting implements TencentMap.OnCameraChangeListener{
      * refocus the map centre
      * @param latLng location of destination
      */
-    public void reFocusMap(LatLng latLng, float rotate){
+    public void reFocusMap(LatLng des, float rotate){
 
         if (lockView){
             CameraUpdate cameraUpdate =
                     CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                            latLng, //new location ，double
+                            des, //new location ，double
                             19, //level of zoom
                             45f, //俯仰角 0~45° (垂直地图时为0)
                             -rotate)); //偏航角 0~360° (正北方为0)
             tencentMap.animateCamera(cameraUpdate);
+            lastMapRotate = -rotate;
         }
+    }
+
+    /**
+     * To move the map'focus to destination for preview when the destination change,
+     * and than go back when 1s later.
+     */
+    public void destinationPreview(LatLng me, LatLng des){
+        CameraUpdate go =
+                CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                        des, //new location ，double
+                        19, //level of zoom
+                        45f, //俯仰角 0~45° (垂直地图时为0)
+                        lastMapRotate)); //偏航角 0~360° (正北方为0)
+        CameraUpdate back =
+                CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                        me, //new location ，double
+                        19, //level of zoom
+                        45f, //俯仰角 0~45° (垂直地图时为0)
+                        lastMapRotate)); //偏航角 0~360° (正北方为0)
+        tencentMap.animateCamera(go);
+        //UI thread wait 1000ms
+        SystemClock.sleep(1000);
+        tencentMap.animateCamera(back);
     }
 
 
     /**
-     * marker's Rotation animation
+     * Rotation animation for marker
      */
     public void spin_Jump_MyEyesClosed(float rotate){
         if (lockView){
@@ -79,6 +106,10 @@ public class AnimationSetting implements TencentMap.OnCameraChangeListener{
 
     }
 
+    /**
+     * a switch to control map'focus
+     * @param lock
+     */
     public static void lockViewSwitch(int lock){
         switch (lock){
             case 0:lockView = false;break;

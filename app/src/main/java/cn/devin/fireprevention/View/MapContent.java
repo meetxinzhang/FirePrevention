@@ -125,22 +125,31 @@ public class MapContent extends ConstraintLayout
 
     @Override
     public void onDestinationChange(LatLng latLng,String sub,int area,int teamnum) {
-        //marker
-        destination = tencentMap.addMarker(
-                new MarkerOptions().position(latLng).title("目的地"));
-        destination.setIcon(Tool.getIcon(R.drawable.location_blue));
+        if (destination == null){
+            destination = tencentMap.addMarker(
+                    new MarkerOptions().position(latLng).title("目的地"));
+            destination.setIcon(Tool.getIcon(R.drawable.location_blue));
+        }else {
+            destination.setPosition(latLng);
+        }
+
         //route
         mapContentPresenter.getRoute(latLng_me, latLng);
         // notify MainActivity
         mainView.onDestinationChange(sub,area,teamnum);
+        aniSet.destinationPreview(latLng_me,latLng);
     }
 
     @Override
     public void onDestinationFinish() {
-        destination.remove();
+        if (destination != null){
+            destination.remove();
+            destination = null;
+        }
         if (polyline != null){
             // avoid the polyline is null due to a network problem
             polyline.remove();
+            polyline = null;
         }
         // notify MainActivity to change view
         mainView.onDestinationFinish();
@@ -161,6 +170,7 @@ public class MapContent extends ConstraintLayout
     public void onFireFinish() {
         if (polygon != null){
             polygon.remove();
+            polygon = null;
         }
     }
 
