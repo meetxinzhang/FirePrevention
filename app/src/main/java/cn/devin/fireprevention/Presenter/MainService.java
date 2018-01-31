@@ -16,7 +16,7 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
  */
 
 public class MainService extends Service implements MyLocation.MyLocationChangeListener{
-    //属性
+    //args
     private final String TAG = "MainService";
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
     private LatLng latLng_des = new LatLng(28.134600, 112.99911); //目的地
@@ -70,6 +70,7 @@ public class MainService extends Service implements MyLocation.MyLocationChangeL
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind: "+"绑定服务");
+        myLocation.controLocLis(true);
         return talkBinder;
     }
 

@@ -217,6 +217,7 @@ public class MapContent extends ConstraintLayout
         switch (i){
             case 1:
                 mapView.onStart();
+                myOrientation.registerLis();
                 break;
             case 2:
                 mapView.onResume();

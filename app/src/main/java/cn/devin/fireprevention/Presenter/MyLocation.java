@@ -21,9 +21,8 @@ public class MyLocation implements TencentLocationListener {
     private LatLng latLng = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
 
     /*
-    单例模式
-    私有的对象
-    构造方法私有化
+    Singleton Pattern
+    get Singleton by getInstance()
      */
     public static MyLocation getInstance(){
         return myLocation;
@@ -36,17 +35,15 @@ public class MyLocation implements TencentLocationListener {
     @Override
     public void onLocationChanged(TencentLocation tencentLocation, int i, String s) {
         if(tencentLocation.ERROR_OK == i) {
-            //定位成功
+            //success
             Log.d(TAG, "onLocationChanged: "+tencentLocation.getLatitude()+", "+tencentLocation.getLongitude());
             latLng.latitude = tencentLocation.getLatitude();
             latLng.longitude = tencentLocation.getLongitude();
-            //调用接口
+            //notify the listener
             myLocationChangeListener.onMyLocationChange(latLng);
-            //删除位置监听器
-            //controLocLis(false);
         }else {
-            //定位失败
-            controLocLis(false);//删除位置监听器
+            //failed
+            controLocLis(false);//unregister
             /*
             0-定位成功
             1-网络问题引起的定位失败
@@ -66,15 +63,14 @@ public class MyLocation implements TencentLocationListener {
 
 
     /**
-     * 位置监听器注册/删除
-     * @param flag true-注册，false-删除
+     * register/un this class to TencentLocation listener
+     * @param flag true-register，false-unregister
      */
     public void controLocLis(boolean flag){
         Context context = MyApplication.getContext();
         TencentLocationManager locationManager = TencentLocationManager.getInstance(context);
 
         if(flag){
-            //注册本类为：位置监听器
             TencentLocationRequest request = TencentLocationRequest.create();
             request.setRequestLevel(1); //请求级别 1 获取：经纬度，位置名称，位置地址
             request.setInterval(1000);//设置定位周期：1000 ms
@@ -98,7 +94,7 @@ public class MyLocation implements TencentLocationListener {
 
 
     /**
-     * 接口，回传位置
+     * interface
      */
     private MyLocationChangeListener myLocationChangeListener;
     public interface MyLocationChangeListener{

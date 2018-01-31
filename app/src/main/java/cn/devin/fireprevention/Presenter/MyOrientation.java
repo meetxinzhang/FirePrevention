@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import cn.devin.fireprevention.MyApplication;
 
@@ -26,45 +25,41 @@ public class MyOrientation implements SensorEventListener{
     private float[] magneticFieldValues = new float[3];
     private float lastOrient = 0;
 
-    /**
-     * 获取单例对象
-     * @return
+    /*
+    Singleton Pattern
+    get Singleton by getInstance()
      */
+    private static MyOrientation myOrientation = new MyOrientation();
     public static MyOrientation getInstance(){
         return myOrientation;
     }
-
-    /*
-    私有的对象
-    私有的构造方法，确保该类在外部不能被实例化
-    通过 getInstance 方法返回唯一实例
-     */
-    private static MyOrientation myOrientation = new MyOrientation();
     private MyOrientation(){
         mSensorManager = (SensorManager) MyApplication.getContext().getSystemService(Context.SENSOR_SERVICE);
 
-        // 初始化加速度传感器
+        // init the accelerometer sensor
         accelerometer = mSensorManager
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        // 初始化地磁场传感器
+        // init the magnetic sensor
         magnetic = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        // 注册监听
-        mSensorManager.registerListener(this, accelerometer, Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, magnetic, Sensor.TYPE_MAGNETIC_FIELD);
-
-
+        // register this class to listener
+        registerLis();
     }
 
+
     /**
-     * 删除监听器
+     * register/un
      */
+    public void registerLis(){
+        mSensorManager.registerListener(this, accelerometer, Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(this, magnetic, Sensor.TYPE_MAGNETIC_FIELD);
+    }
     public void unRegisterLis(){
         mSensorManager.unregisterListener(this);
     }
 
 
     /**
-     * 计算方向角
+     * calculate the Orientation
      */
     private void calculateOrientation() {
         float[] values = new float[3];
@@ -72,7 +67,7 @@ public class MyOrientation implements SensorEventListener{
         SensorManager.getRotationMatrix(R, null, accelerometerValues,
                 magneticFieldValues);
         SensorManager.getOrientation(R, values);
-        //将弧度切换为角度
+        // Switch the arc to an angle
         values[0] = (float) Math.toDegrees(values[0]);
 
         if (values[0] < 0){
@@ -85,8 +80,7 @@ public class MyOrientation implements SensorEventListener{
     }
 
     /**
-     * 传感器更新回调
-     * @param sensorEvent 传感器事件
+     * callback of sensor
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -106,11 +100,9 @@ public class MyOrientation implements SensorEventListener{
 
 
     /**
-     * 接口，回传方向角
+     * interface
      */
     private MyOrientationListener myOrientationListener;
-
-
 
     public interface MyOrientationListener{
         void onOrientationChange(float rotate);
