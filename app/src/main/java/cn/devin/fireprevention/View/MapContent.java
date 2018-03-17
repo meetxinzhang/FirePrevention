@@ -84,7 +84,7 @@ public class MapContent extends ConstraintLayout
         me.setIcon(Tool.getIcon(R.drawable.airplane_blue));
         //UI setting of map
         UiSettings uiSettings = tencentMap.getUiSettings();
-        uiSettings.setCompassEnabled(true); //指南针按钮
+        uiSettings.setCompassEnabled(true); // 指南针按钮
         //uiSettings.setZoomControlsEnabled(true);
         //uiSettings.setMyLocationButtonEnabled(true);// 定位我的位置按钮
         //！init map -- end！
@@ -188,7 +188,6 @@ public class MapContent extends ConstraintLayout
      * change the type of map
      */
     public void changeMapType(){
-
         switch (tencentMap.getMapType()) {
             case TencentMap.MAP_TYPE_NORMAL:
                 tencentMap.setMapType(TencentMap.MAP_TYPE_SATELLITE);

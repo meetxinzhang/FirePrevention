@@ -9,6 +9,7 @@
 
     <dimen name="fab1_margin">16dp</dimen>
     <dimen name="fab2_margin">96dp</dimen>
+    <dimen name="fab3_margin">160dp</dimen>
 
     <dimen name="bottom_bar">40dp</dimen>
 </resources>

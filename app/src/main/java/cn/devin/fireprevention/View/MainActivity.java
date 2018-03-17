@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
     private TextView task_sub, area, teamnum;
     private ConstraintLayout newTask;
     private MapContent mapContent;
-    private FloatingActionButton fab_lock, fab_map;
+    private FloatingActionButton fab_lock, fab_map, fab_fire;
 
     // control Service by binder
     private MainService.TalkBinder talkBinder;
@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity
             //get the object of TalkBinder
             talkBinder = (MainService.TalkBinder) iBinder;
             // set ServDataChangeListener
-//            talkBinder.registerLis(MainActivity.this);
             talkBinder.registerLis(mapContent);
         }
         @Override
@@ -80,6 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         fab_lock = findViewById(R.id.fab_lock);
         fab_map = findViewById(R.id.fab_type);
+        fab_fire = findViewById(R.id.fab_fire);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -232,6 +232,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * callback from presenter to check permission when running
+     * call presenter on onCreate()
      */
     @Override
     public void checkPermission(String[] permissions) {
@@ -259,7 +260,7 @@ public class MainActivity extends AppCompatActivity
 
     /**
      * callback from MapContent
-     * @param sub  subject of fire
+     * @param sub subject of fire
      */
     @Override
     public void onDestinationChange(String sub,int area,int teamnum) {
@@ -275,6 +276,10 @@ public class MainActivity extends AppCompatActivity
         newTask.setVisibility(View.GONE);
     }
 
+    /**
+     * callback of click
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -283,6 +288,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.fab_type:
                 mapContent.changeMapType();
+                break;
+            case R.id.fab_fire:
+                Toast.makeText(this,"已将该点报告为火情点",Toast.LENGTH_SHORT).show();
                 break;
         }
     }

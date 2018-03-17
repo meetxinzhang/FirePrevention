@@ -34,6 +34,16 @@
 
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_fire"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="@dimen/fab1_margin"
+        android:layout_marginBottom="@dimen/fab3_margin"
+        app:srcCompat="@drawable/fire" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_type"
         android:onClick="onClick"
         android:layout_width="wrap_content"

@@ -34,7 +34,7 @@ public class AnimationSetting implements TencentMap.OnCameraChangeListener{
 
     /**
      * refocus the map centre
-     * @param latLng location of destination
+     * @param des location of destination
      */
     public void reFocusMap(LatLng des, float rotate){
 
