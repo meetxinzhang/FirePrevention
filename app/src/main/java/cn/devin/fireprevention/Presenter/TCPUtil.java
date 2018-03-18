@@ -33,7 +33,7 @@ public class TCPUtil extends Thread{
     public void run() {
         try {
             socket = new Socket(serverAddress,port);
-//            //设置客户端与服务器建立连接的超时时长为30秒
+            //设置客户端与服务器建立连接的超时时长为30秒
             socket.setSoTimeout(30000);
             //初始化缓存
             br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-8"));
@@ -55,16 +55,22 @@ public class TCPUtil extends Thread{
 
 
     //发送消息
-    public void sendToServer(String message){
-        try {
-//            socket.getOutputStream().write((message+"\n").getBytes("UTF-8"));
-            bw.write(message+"\n");
-            bw.flush();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public void sendToServer(final String message){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //socket.getOutputStream().write((message+"\n").getBytes("UTF-8"));
+                    bw.write(message+"\n");
+                    bw.flush();
+
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
-    //end
 }
 

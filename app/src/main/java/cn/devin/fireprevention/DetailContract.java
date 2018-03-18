@@ -34,7 +34,7 @@ public interface DetailContract {
 
     }
 
-    interface HttpPre {
-        void sendHttpRequest();
+    interface TCPPre {
+        void send();
     }
 }
