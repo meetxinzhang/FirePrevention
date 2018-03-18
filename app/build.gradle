@@ -31,5 +31,4 @@ dependencies {
     compile 'com.tencent.map:tencent-map-vector-sdk:latest.release'
     implementation files('libs/TencentMapSearch_v1.1.7.490d100.jar')
     implementation files('libs/TencentLocationSdk_v6.2.5.3_r15b3b3cc_20171103_115903.jar')
-    implementation files('libs/tencent_map_sdk_4.0.5.1.b1af764.jar')
 }

@@ -50,6 +50,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".View.ChatActivity"/>
+
         <service
             android:name=".Presenter.MainService"
             android:enabled="true"

@@ -30,5 +30,11 @@ public interface DetailContract {
         void getRoute(LatLng me, LatLng des);
     }
 
-    
+    interface MainServ {
+
+    }
+
+    interface HttpPre {
+        void sendHttpRequest();
+    }
 }
