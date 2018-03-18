@@ -12,7 +12,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 /**
- * Created by leosunzh on 2015/12/27.
+ * Created by Devin on 2015/12/27.
+ * TCP 协议封装类
  */
 
 public class TCPUtil extends Thread{
