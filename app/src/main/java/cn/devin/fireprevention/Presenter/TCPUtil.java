@@ -70,7 +70,6 @@ public class TCPUtil extends Thread{
                 }
             }
         }).start();
-
     }
 }
 
