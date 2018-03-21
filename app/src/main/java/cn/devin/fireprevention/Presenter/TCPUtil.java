@@ -17,7 +17,7 @@ import java.net.Socket;
  */
 
 public class TCPUtil extends Thread{
-    final String serverAddress = "192.168.1.105";
+    final String serverAddress = "172.22.25.96";
     final int port = 1988;
 
     Socket socket;

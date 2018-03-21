@@ -15,7 +15,8 @@ import cn.devin.fireprevention.Presenter.TCPUtil;
 import cn.devin.fireprevention.R;
 
 /**
- * Created by Devin on 2018/3/18.
+ * Created by Devin on 2015/12/27.
+ * 聊天界面
  */
 
 public class ChatActivity extends Activity implements View.OnClickListener {
