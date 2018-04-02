@@ -5,6 +5,11 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 
 import java.util.List;
 
+import cn.devin.fireprevention.Model.Fire;
+import cn.devin.fireprevention.Model.MyLatLng;
+import cn.devin.fireprevention.Model.Task;
+import cn.devin.fireprevention.Model.Team;
+
 /**
  * Created by Devin on 2018/1/23.
  * Manage all MVP-Architecture interface
@@ -31,10 +36,12 @@ public interface DetailContract {
     }
 
     interface MainServ {
-
+        void onTaskChange(Task task);
+        void onFireChange(Fire fire);
+        void onTeamChange(Team team);
     }
 
     interface TCPPre {
-        void send();
+        void sendMyLatlng(MyLatLng myLatLng, final int type);
     }
 }

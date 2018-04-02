@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import cn.devin.fireprevention.Presenter.TCPUtil;
+import cn.devin.fireprevention.Presenter.TCPPresenter;
 import cn.devin.fireprevention.R;
 
 /**
@@ -24,7 +24,7 @@ public class ChatActivity extends Activity implements View.OnClickListener {
     EditText input_ed;
     Button send_b;
 
-    TCPUtil task;//是一个线程类
+    TCPPresenter task;//是一个线程类
     Handler handler;
 
 
@@ -47,7 +47,7 @@ public class ChatActivity extends Activity implements View.OnClickListener {
             }
         };
 
-        task = new TCPUtil(handler);
+        //task = new TCPPresenter(handler);
         Thread thread = new Thread(task);
         thread.start();
     }
@@ -57,7 +57,7 @@ public class ChatActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send_b:
-                task.sendToServer(input_ed.getText().toString());
+                //task.sendToServer(input_ed.getText().toString());
                 input_ed.setText(null);
                 break;
         }

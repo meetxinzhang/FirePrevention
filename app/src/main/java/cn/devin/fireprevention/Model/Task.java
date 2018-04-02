@@ -7,9 +7,9 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
  * model of Task
  */
 
-public class MyTask {
+public class Task {
     //目的地
-    LatLng destination;
+    MyLatLng destination;
     //发布时间
     int[] pubTime;
     //主题
@@ -17,7 +17,7 @@ public class MyTask {
     //描述
     String describe;
 
-    public MyTask(LatLng destination,int[] pubTime,String subject,String describe){
+    public Task(MyLatLng destination, int[] pubTime, String subject, String describe){
         this.destination = destination;
         this.pubTime = pubTime;
         this.subject = subject;
@@ -28,7 +28,7 @@ public class MyTask {
         this.describe = describe;
     }
 
-    public void setDestination(LatLng destination) {
+    public void setDestination(MyLatLng destination) {
         this.destination = destination;
     }
 
@@ -44,7 +44,7 @@ public class MyTask {
         return pubTime;
     }
 
-    public LatLng getDestination() {
+    public MyLatLng getDestination() {
         return destination;
     }
 

@@ -292,6 +292,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.fab_fire:
                 Toast.makeText(this,"已将该点报告为火情点",Toast.LENGTH_SHORT).show();
+
                 break;
         }
     }

@@ -10,17 +10,21 @@ import java.util.List;
  */
 
 public class Fire {
-    List<LatLng> fireHead;
+    List<MyLatLng> fireHead;
 
-    public Fire(LatLng latLng){
+    public Fire(MyLatLng latLng){
         this.fireHead.add(latLng);
     }
 
-    public void addFireHead(LatLng latLng){
+    public void addFireHead(MyLatLng latLng){
         this.fireHead.add(latLng);
     }
 
     public void subFireHead(int i){
         this.fireHead.subList(i,1);
+    }
+
+    public List<MyLatLng> getFireHead() {
+        return fireHead;
     }
 }

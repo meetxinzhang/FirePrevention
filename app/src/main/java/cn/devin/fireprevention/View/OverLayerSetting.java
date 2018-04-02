@@ -16,12 +16,12 @@ public class OverLayerSetting {
 
     /**
      * set polygonOptions
-     * @param latLngs a set of latlngs
+     * @param list a set of latlngs
      * @return PolygonOptions
      */
-    public static PolygonOptions getPolygonOptions(LatLng[] latLngs){
+    public static PolygonOptions getPolygonOptions(List<LatLng> list){
         PolygonOptions polygonOptions = new PolygonOptions().
-                add(latLngs).
+                add(list).
                 fillColor(0xffff0000).
                 strokeColor(0xffff0000).
                 strokeWidth(1); //width od border

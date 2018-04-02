@@ -20,6 +20,7 @@ import com.tencent.tencentmap.mapsdk.maps.model.Polyline;
 import java.util.List;
 
 import cn.devin.fireprevention.DetailContract;
+import cn.devin.fireprevention.Model.Person;
 import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.Presenter.MapContentPresenter;
 import cn.devin.fireprevention.Presenter.MyOrientation;
@@ -124,7 +125,7 @@ public class MapContent extends ConstraintLayout
     }
 
     @Override
-    public void onDestinationChange(LatLng latLng,String sub,int area,int teamnum) {
+    public void onTaskChange(LatLng latLng,String sub,int area,int teamnum) {
         if (destination == null){
             destination = tencentMap.addMarker(
                     new MarkerOptions().position(latLng).title("目的地"));
@@ -141,7 +142,7 @@ public class MapContent extends ConstraintLayout
     }
 
     @Override
-    public void onDestinationFinish() {
+    public void onTaskFinish() {
         if (destination != null){
             destination.remove();
             destination = null;
@@ -156,12 +157,12 @@ public class MapContent extends ConstraintLayout
     }
 
     @Override
-    public void onFireChange(LatLng[] latLngs) {
-        if (latLngs != null){
+    public void onFireChange(List<LatLng> list) {
+        if (list != null){
             if (polygon == null){
-                polygon = tencentMap.addPolygon(OverLayerSetting.getPolygonOptions(latLngs));
+                polygon = tencentMap.addPolygon(OverLayerSetting.getPolygonOptions(list));
             }else {
-                polygon.setOptions(OverLayerSetting.getPolygonOptions(latLngs));
+                polygon.setOptions(OverLayerSetting.getPolygonOptions(list));
             }
         }
     }
@@ -172,6 +173,11 @@ public class MapContent extends ConstraintLayout
             polygon.remove();
             polygon = null;
         }
+    }
+
+    @Override
+    public void onTeamChange(List<Person> list) {
+
     }
 
 
