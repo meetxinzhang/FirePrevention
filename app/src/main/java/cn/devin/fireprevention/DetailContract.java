@@ -36,6 +36,7 @@ public interface DetailContract {
     }
 
     interface MainServ {
+        void onConnectSuccess();
         void onTaskChange(Task task);
         void onFireChange(Fire fire);
         void onTeamChange(Team team);

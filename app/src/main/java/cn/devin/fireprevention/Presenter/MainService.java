@@ -37,10 +37,11 @@ public class MainService extends Service
     private MyLocation myLocation;
     private TCPPresenter tcpPre;
 
-    // Binder to communicate with activity
+
+    /**
+     * Binder, to let activity control service
+     */
     private TalkBinder talkBinder = new TalkBinder();
-
-
     public class TalkBinder extends Binder{
         // set ServDataChangeListener
         public void registerLis(ServDataChangeListener servDataChangeListener){
@@ -56,10 +57,6 @@ public class MainService extends Service
         }
 
 
-
-
-
-
         //test a new task
         public void testNewTask(){
             servDataChangeListener.onTaskChange(latLng_des,
@@ -69,17 +66,7 @@ public class MainService extends Service
         }
         //test a fire
         public void testNewFire(){
-//            LatLng[] latLngs = {
-//                    new LatLng(28.135109,112.99911),
-//                    new LatLng(28.135209,112.99901),
-//                    new LatLng(28.135209,112.99891),
-//                    new LatLng(28.135309,112.99881),
-//                    new LatLng(28.135409,112.99871),
-//                    new LatLng(28.135509,112.99871),
-//                    new LatLng(28.135509,112.99881),
-//                    new LatLng(28.135409,112.99891),
-//                    new LatLng(28.135309,112.99901),
-//                    new LatLng(28.135209,112.99911)};
+
             List<LatLng> list = new ArrayList();
             list.add(new LatLng(28.135109,112.99911));
             list.add(new LatLng(28.135209,112.99901));
@@ -108,18 +95,9 @@ public class MainService extends Service
         myLocation = MyLocation.getInstance();
         myLocation.setMyLocationChangeListener(this);
 
-        tcpPre = new TCPPresenter(null, this);
-
-        //开启线程，定时发送我的位置
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
-                    SystemClock.sleep(2000);
-                }
-            }
-        }).start();
+        tcpPre = new TCPPresenter(this);
+        //开启线程，建立连接，同时保持接受数据
+        new Thread(tcpPre).start();
     }
 
     @Nullable
@@ -154,6 +132,22 @@ public class MainService extends Service
      * interface from MainSer
      */
     @Override
+    public void onConnectSuccess() {
+        Log.d(TAG, "run: 111111111111111111111111111111");
+        //开启线程，定时发送我的位置
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
+                    Log.d(TAG, "run: 222222222222222222222222222222222");
+                    SystemClock.sleep(2000);
+                }
+            }
+        }).start();
+    }
+
+    @Override
     public void onTaskChange(Task task) {
         servDataChangeListener.onTaskChange(ParseData.getLatlng(task.getDestination()),
                 "请急速前往灭火。",
@@ -172,8 +166,9 @@ public class MainService extends Service
     }
 
 
-    //--------------------interface to control activity 开始----------------------------------
-
+    /**
+     * interface to control activity
+     */
     private ServDataChangeListener servDataChangeListener;
     public interface ServDataChangeListener{
         void onMyLocationChange(LatLng latLng);
