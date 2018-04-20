@@ -15,6 +15,7 @@ import java.util.List;
 
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Model.Fire;
+import cn.devin.fireprevention.Model.MyLatLng;
 import cn.devin.fireprevention.Model.Person;
 import cn.devin.fireprevention.Model.Task;
 import cn.devin.fireprevention.Model.Team;
@@ -33,9 +34,12 @@ public class MainService extends Service
     private final String TAG = "MainService";
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
     private LatLng latLng_des = new LatLng(28.134600, 112.99911); //目的地
+    private List<MyLatLng> fireHead = new ArrayList<>();
 
+    //pre
     private MyLocation myLocation;
     private TCPPresenter tcpPre;
+    private DetailContract.MapContVi mapContVi;
 
 
     /**
@@ -44,8 +48,8 @@ public class MainService extends Service
     private TalkBinder talkBinder = new TalkBinder();
     public class TalkBinder extends Binder{
         // set ServDataChangeListener
-        public void registerLis(ServDataChangeListener servDataChangeListener){
-            MainService.this.servDataChangeListener = servDataChangeListener;
+        public void registerLis(DetailContract.MapContVi mapContVi){
+            MainService.this.mapContVi = mapContVi;
         }
 
         // send a location to WebService
@@ -59,7 +63,7 @@ public class MainService extends Service
 
         //test a new task
         public void testNewTask(){
-            servDataChangeListener.onTaskChange(latLng_des,
+            mapContVi.onTaskChange(latLng_des,
                     "请急速前往灭火。",
                     10,
                     10);
@@ -78,11 +82,11 @@ public class MainService extends Service
             list.add(new LatLng(28.135409,112.99891));
             list.add(new LatLng(28.135309,112.99901));
             list.add(new LatLng(28.135209,112.99911));
-            servDataChangeListener.onFireChange(list);
+            mapContVi.onFireChange(list);
         }
         public void testFinish(){
-            servDataChangeListener.onTaskFinish();
-            servDataChangeListener.onFireFinish();
+            mapContVi.onTaskFinish();
+            mapContVi.onFireFinish();
         }
     }
 
@@ -120,27 +124,27 @@ public class MainService extends Service
 
 
     /**
-     * interface from MyLocation
+     * callback from MyLocation
      */
     @Override
     public void onMyLocationChange(LatLng latLng) {
-        servDataChangeListener.onMyLocationChange(this.latLng_me = latLng);
+        mapContVi.onMyLocationChange(this.latLng_me = latLng);
     }
 
 
     /**
-     * interface from MainSer
+     * callback from MainSer(which called in the TCPPre)
      */
     @Override
     public void onConnectSuccess() {
-        Log.d(TAG, "run: 111111111111111111111111111111");
+        Log.d(TAG, "run: 发送位置线程已开启");
         //开启线程，定时发送我的位置
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true){
                     tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
-                    Log.d(TAG, "run: 222222222222222222222222222222222");
+                    Log.d(TAG, "run: 发送一次位置成功");
                     SystemClock.sleep(2000);
                 }
             }
@@ -149,7 +153,7 @@ public class MainService extends Service
 
     @Override
     public void onTaskChange(Task task) {
-        servDataChangeListener.onTaskChange(ParseData.getLatlng(task.getDestination()),
+        mapContVi.onTaskChange(ParseData.getLatlng(task.getDestination()),
                 "请急速前往灭火。",
                 10,
                 10);
@@ -157,25 +161,57 @@ public class MainService extends Service
 
     @Override
     public void onFireChange(Fire fire) {
-        servDataChangeListener.onFireChange(ParseData.getLatLngs(fire.getFireHead()));
+        this.fireHead = fire.getFireHead();
+        mapContVi.onFireChange(ParseData.getLatLngs(fireHead));
+        checkSecurity();
     }
 
     @Override
     public void onTeamChange(Team team) {
-        servDataChangeListener.onTeamChange(team.getPersons());
+        mapContVi.onTeamChange(team.getPersons());
     }
 
 
     /**
-     * interface to control activity
+     * 检查安全性：是否位于起火点10米范围内
+     * 根据这里的功能需求，火场绘制应该用实心图，而不能用一个圈围起来的多边形，建议
+     * 使用腾讯地图中的 热力图 来构建火场
+     * @return true-安全， false-不安全
      */
-    private ServDataChangeListener servDataChangeListener;
-    public interface ServDataChangeListener{
-        void onMyLocationChange(LatLng latLng);
-        void onTaskChange(LatLng latLng, String sub, int area, int teamnum);
-        void onTaskFinish();
-        void onFireChange(List<LatLng> list);
-        void onFireFinish();
-        void onTeamChange(List<Person> list);
+    private void checkSecurity(){
+        int n = fireHead.size();
+        if (n != 0){
+            for (int i=0;i<n;i++){
+                MyLatLng myLatLng = fireHead.get(i);
+                double x = myLatLng.getLat();
+                double y = myLatLng.getLng();
+                double a = latLng_me.latitude;
+                double b = latLng_me.longitude;
+
+                if (Math.sqrt(Math.pow(x-a, 2) + Math.pow(y-b, 2)) < 10){
+                    mapContVi.onSecurityChange(false);
+                    break;
+                }else {
+                    mapContVi.onSecurityChange(true);
+                }
+            }
+        }else {
+            mapContVi.onSecurityChange(true);
+        }
     }
+
+
+
+//    /**
+//     * interface to control activity
+//     */
+//    private ServDataChangeListener servDataChangeListener;
+//    public interface ServDataChangeListener{
+//        void onMyLocationChange(LatLng latLng);
+//        void onTaskChange(LatLng latLng, String sub, int area, int teamNum);
+//        void onTaskFinish();
+//        void onFireChange(List<LatLng> list);
+//        void onFireFinish();
+//        void onTeamChange(List<Person> list);
+//    }
 }

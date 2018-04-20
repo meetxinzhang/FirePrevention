@@ -17,6 +17,7 @@ import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
 import com.tencent.tencentmap.mapsdk.maps.model.Polygon;
 import com.tencent.tencentmap.mapsdk.maps.model.Polyline;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.devin.fireprevention.DetailContract;
@@ -25,6 +26,7 @@ import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.Presenter.MapContentPresenter;
 import cn.devin.fireprevention.Presenter.MyOrientation;
 import cn.devin.fireprevention.R;
+import cn.devin.fireprevention.Tools.ParseData;
 import cn.devin.fireprevention.Tools.Tool;
 
 /**
@@ -34,18 +36,17 @@ import cn.devin.fireprevention.Tools.Tool;
  */
 
 public class MapContent extends ConstraintLayout
-        implements MainService.ServDataChangeListener,
-        MyOrientation.MyOrientationListener,
+        implements MyOrientation.MyOrientationListener,
         DetailContract.MapContVi{
     private final static String TAG = "MapContent";
     // args
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
-    private DetailContract.MainVi mainView;
 
     // Listener
     protected MyOrientation myOrientation;
 
     //presenter
+    private DetailContract.MainVi mainView;
     private MapContentPresenter mapContentPresenter;
     private AnimationSetting aniSet;
 
@@ -56,6 +57,7 @@ public class MapContent extends ConstraintLayout
 
     //overLayer
     private Marker me;
+    private List<Marker> markerList = new ArrayList<>();
     private Marker destination;
     private Polygon polygon;
     private Polyline polyline;
@@ -115,7 +117,7 @@ public class MapContent extends ConstraintLayout
     }
 
     /**
-     * callback from Service's ServDataChangeListener
+     * callback from MapContVi
      * @param latLng longitude and latitude
      */
     @Override
@@ -125,7 +127,7 @@ public class MapContent extends ConstraintLayout
     }
 
     @Override
-    public void onTaskChange(LatLng latLng,String sub,int area,int teamnum) {
+    public void onTaskChange(LatLng latLng,String sub,int area,int teamNum) {
         if (destination == null){
             destination = tencentMap.addMarker(
                     new MarkerOptions().position(latLng).title("目的地"));
@@ -137,7 +139,7 @@ public class MapContent extends ConstraintLayout
         //route
         mapContentPresenter.getRoute(latLng_me, latLng);
         // notify MainActivity
-        mainView.onDestinationChange(sub,area,teamnum);
+        mainView.onDestinationChange(sub,area,teamNum);
         aniSet.destinationPreview(latLng_me,latLng);
     }
 
@@ -177,7 +179,24 @@ public class MapContent extends ConstraintLayout
 
     @Override
     public void onTeamChange(List<Person> list) {
+        // TODO 这里以后要做逻辑优化，较小内存和时间开销
+        for (int i=0; i<markerList.size();i++){
+            markerList.get(i).remove();
+            markerList.remove(i);
+        }
 
+        Person person;
+        for (int i=0; i<list.size();i++){
+            person = list.get(i);
+            LatLng latLng = ParseData.getLatlng(person.getMyLatLng());
+
+            markerList.add(tencentMap.addMarker(new MarkerOptions().position(latLng).title("").snippet("DefaultMarker")));
+        }
+    }
+
+    @Override
+    public void onSecurityChange(boolean safety) {
+        mainView.onSecurityChange(safety);
     }
 
 

@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import cn.devin.fireprevention.BasePresenter;
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Presenter.MainPresenter;
 import cn.devin.fireprevention.Presenter.MainService;
@@ -40,14 +41,17 @@ public class MainActivity extends AppCompatActivity
 
     // Args
     private final String TAG = "MainActivity";
-    MainPresenter mainPresenter;
+    private Boolean safety = true;
 
     // View
     private Toolbar toolbar;
-    private TextView task_sub, area, teamnum;
+    private TextView task_sub, area, teamNum;
     private ConstraintLayout newTask;
     private MapContent mapContent;
     private FloatingActionButton fab_lock, fab_map, fab_fire;
+
+    // Pre
+    MainPresenter mainPresenter;
 
     // control Service by binder
     private MainService.TalkBinder talkBinder;
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         task_sub = findViewById(R.id.task_sub);
         area = findViewById(R.id.area);
-        teamnum = findViewById(R.id.teamnum);
+        teamNum = findViewById(R.id.teamNum);
 
         fab_lock = findViewById(R.id.fab_lock);
         fab_map = findViewById(R.id.fab_type);
@@ -264,17 +268,27 @@ public class MainActivity extends AppCompatActivity
      * @param sub subject of fire
      */
     @Override
-    public void onDestinationChange(String sub,int area,int teamnum) {
+    public void onDestinationChange(String sub,int area,int teamNum) {
         toolbar.setTitle("新任务！");
         this.task_sub.setText(sub);
         this.area.setText(area + "平方米");
-        this.teamnum.setText(teamnum + "人");
+        this.teamNum.setText(teamNum + "人");
         newTask.setVisibility(View.VISIBLE);
     }
     @Override
     public void onDestinationFinish() {
         toolbar.setTitle(R.string.app_name);
         newTask.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onSecurityChange(boolean safety) {
+        this.safety = safety;
+        if (safety){
+            fab_fire.setBackgroundResource(R.drawable.fire);
+        }else {
+            fab_fire.setBackgroundResource(R.drawable.outfire);
+        }
     }
 
     /**
@@ -291,8 +305,11 @@ public class MainActivity extends AppCompatActivity
                 mapContent.changeMapType();
                 break;
             case R.id.fab_fire:
-                Toast.makeText(this,"已将该点报告为火情点",Toast.LENGTH_SHORT).show();
-
+                if (safety){
+                    Toast.makeText(this,"报告为火情点",Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(this,"报告为安全点",Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

@@ -1,5 +1,6 @@
 package cn.devin.fireprevention.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,7 +8,7 @@ import java.util.List;
  */
 
 public class Team {
-    private List<Person> persons;
+    private List<Person> persons = new ArrayList<>();
 
     public Team(Person person){
         persons.add(person);

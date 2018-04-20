@@ -1,14 +1,13 @@
 package cn.devin.fireprevention.Presenter;
 
-
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -34,6 +33,8 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
 
     private BufferedReader br = null;
     private BufferedWriter bw = null;
+//    private DataOutputStream outputStream = null;
+//    private DataInputStream inputStream = null;
 
     public TCPPresenter(DetailContract.MainServ mainServ){
         this.mainServ = mainServ;
@@ -47,28 +48,30 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
         try {
             socket = new Socket(serverAddress, port);
             //设置客户端与服务器建立连接的超时时长为30秒
-            socket.setSoTimeout(30000);
+            //socket.setSoTimeout(30000);
             //初始化缓存
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-8"));
             this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-8"));
+//            outputStream = new DataOutputStream(socket.getOutputStream());
+//            inputStream = new DataInputStream(socket.getInputStream());
 
             //通知后台服务：连接已成功建立
             mainServ.onConnectSuccess();
 
             // 从InputStream当中读取客户端所发送的数据
-            String message = null;
-            while ((message = this.br.readLine())!=null) {
-                Message msg = new Message();
+            String s = null;
+//            Object obj;
+            while ((s = br.readLine())!=null) {
 
-                switch (message.charAt(0)){
+                switch (s.charAt(0)){
                     case '1':
-                        mainServ.onTeamChange(ParseData.getTeam(message.substring(1)));
+                        mainServ.onTeamChange(ParseData.getTeam(s.substring(1)));
                         break;
                     case '2':
-                        mainServ.onFireChange(ParseData.getFire(message.substring(1)));
+                        mainServ.onFireChange(ParseData.getFire(s.substring(1)));
                         break;
                     case '3':
-                        mainServ.onTaskChange(ParseData.getTask(message.substring(1)));
+                        mainServ.onTaskChange(ParseData.getTask(s.substring(1)));
                         break;
                     default:
                         Log.d(TAG, "run: + 收到的消息没有首位类型标记！");
@@ -85,7 +88,7 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
     /**
      * 发送位置，考虑到要重复调用，需要调用方自带线程
      * @param myLatLng 经纬度位置
-     * @param type 位置类型：1-我的位置， 2-着火位置， 已灭火位置
+     * @param type 位置类型：1-我的位置， 2-着火位置， 3-已灭火位置
      */
     @Override
     public void sendMyLatlng(MyLatLng myLatLng, final int type) {
@@ -93,8 +96,9 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
         final String json = gson.toJson(myLatLng);
 
         try {
-            bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-8"));
-
+//            bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-8"));
+//            outputStream.writeBytes(type + json +"\n");
+//            outputStream.flush();
             bw.write(type + json +"\n");
             bw.flush();
         } catch (IOException e){
@@ -110,7 +114,7 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
             @Override
             public void run() {
                 try {
-                    //socket.getOutputStream().write((message+"\n").getBytes("UTF-8"));
+                    socket.getOutputStream().write((message+"\n").getBytes("UTF-8"));
                     bw.write(type + message+"\n");
                     bw.flush();
 
