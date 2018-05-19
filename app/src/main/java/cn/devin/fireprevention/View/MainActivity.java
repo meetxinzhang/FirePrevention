@@ -179,6 +179,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
+            case R.id.action_settings:
+                SettingActivity.actionStart(this);
+
             case R.id.simulate_des:
                 if(talkBinder == null){
                     Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");
@@ -292,7 +295,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * callback of click
+     * callback of clicked fab
      * @param view
      */
     @Override
@@ -314,6 +317,30 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
         }
+    }
+
+    /**
+     * 设置界面回调
+     * @param requestCode 返回码
+     * @param resultCode 结果码
+     * @param data 返回数据
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String ip = data.getStringExtra("ip");
+        int port = data.getIntExtra("port", 1988);
+
+        boolean isChange = talkBinder.updateIP(ip, port);
+        if (isChange){
+            Toast.makeText(this,"已更新，正在重连...",Toast.LENGTH_SHORT).show();
+        }
+
+//        if (!ip.equals(this.ip) | port != this.port){
+//            textView_show.append("已更新，正在重连..."+"\n");
+//            netPresenter = new NetPresenter( handler, ip, port);
+//            netPresenter.start();
+//        }
     }
 }
 

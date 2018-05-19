@@ -36,8 +36,12 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
 //    private DataOutputStream outputStream = null;
 //    private DataInputStream inputStream = null;
 
-    public TCPPresenter(DetailContract.MainServ mainServ){
+    public TCPPresenter(DetailContract.MainServ mainServ, String ip, int port){
         this.mainServ = mainServ;
+        if (ip!=null && port!=0){
+            this.serverAddress = ip;
+            this.port = port;
+        }
     }
 
     /**

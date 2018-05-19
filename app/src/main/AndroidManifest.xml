@@ -51,6 +51,7 @@
         </activity>
 
         <activity android:name=".View.ChatActivity"/>
+        <activity android:name=".View.SettingActivity"/>
 
         <service
             android:name=".Presenter.MainService"

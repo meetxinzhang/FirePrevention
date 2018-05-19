@@ -60,6 +60,14 @@ public class MainService extends Service
             tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
         }
 
+        public boolean updateIP(String ip, int port){
+            // 重新建立 TCP 连接，之前的对象会被 Android 垃圾回收机制回收掉
+            tcpPre = new TCPPresenter(MainService.this, ip, port);
+            //开启线程，建立连接，同时保持接受数据
+            new Thread(tcpPre).start();
+            return true;
+        }
+
 
         //test a new task
         public void testNewTask(){
@@ -99,7 +107,7 @@ public class MainService extends Service
         myLocation = MyLocation.getInstance();
         myLocation.setMyLocationChangeListener(this);
 
-        tcpPre = new TCPPresenter(this);
+        tcpPre = new TCPPresenter(this, null, 0);
         //开启线程，建立连接，同时保持接受数据
         new Thread(tcpPre).start();
     }
