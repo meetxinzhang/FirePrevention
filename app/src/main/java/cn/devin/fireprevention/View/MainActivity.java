@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
     private TextView task_sub, area, teamNum;
     private ConstraintLayout newTask;
     private MapContent mapContent;
-    private FloatingActionButton fab_lock, fab_map, fab_fire;
+    private FloatingActionButton fab_lock, fab_type, fab_fire;
 
     // Pre
     MainPresenter mainPresenter;
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity
         teamNum = findViewById(R.id.teamNum);
 
         fab_lock = findViewById(R.id.fab_lock);
-        fab_map = findViewById(R.id.fab_type);
+        fab_type = findViewById(R.id.fab_type);
         fab_fire = findViewById(R.id.fab_fire);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_chat) {
             // Handle the camera action
             ChatActivity.actionStart(this);
         } else if (id == R.id.nav_gallery) {
@@ -307,8 +307,10 @@ public class MainActivity extends AppCompatActivity
             case R.id.fab_fire:
                 if (safety){
                     Toast.makeText(this,"报告为火情点",Toast.LENGTH_SHORT).show();
+                    talkBinder.reportFire();
                 }else {
                     Toast.makeText(this,"报告为安全点",Toast.LENGTH_SHORT).show();
+                    talkBinder.removeFire();
                 }
                 break;
         }

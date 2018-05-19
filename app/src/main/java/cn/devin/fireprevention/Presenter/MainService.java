@@ -53,11 +53,11 @@ public class MainService extends Service
         }
 
         // send a location to WebService
-        public void reportFire(LatLng me){
-            tcpPre.sendMyLatlng(ParseData.getMyLatLng(me), 2);
+        public void reportFire(){
+            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
         }
-        public void removeFire(LatLng me){
-            tcpPre.sendMyLatlng(ParseData.getMyLatLng(me), 3);
+        public void removeFire(){
+            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
         }
 
 
