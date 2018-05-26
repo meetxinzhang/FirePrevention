@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()){
             case R.id.action_settings:
                 SettingActivity.actionStart(this);
+                return true;
 
             case R.id.simulate_des:
                 if(talkBinder == null){
@@ -196,6 +197,15 @@ public class MainActivity extends AppCompatActivity
                     talkBinder.testNewFire();
                 }
                 return true;
+
+            case R.id.simulate_team:
+                if (talkBinder == null){
+                    Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");
+                }else {
+                    talkBinder.testTeam();
+                }
+                return true;
+
             case R.id.simulate_finish:
                 if(talkBinder == null){
                     Log.d(TAG, "onOptionsItemSelected: "+"talkBinder == null");

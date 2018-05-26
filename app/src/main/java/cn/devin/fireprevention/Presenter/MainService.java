@@ -92,6 +92,15 @@ public class MainService extends Service
             list.add(new LatLng(28.135209,112.99911));
             mapContVi.onFireChange(list);
         }
+
+        public void testTeam(){
+            List<Person> list = new ArrayList();
+            list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135109,112.99911))));
+            list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135209,112.99891))));
+            list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135209,112.99911))));
+            mapContVi.onTeamChange(list);
+        }
+
         public void testFinish(){
             mapContVi.onTaskFinish();
             mapContVi.onFireFinish();

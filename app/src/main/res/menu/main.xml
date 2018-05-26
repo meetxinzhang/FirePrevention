@@ -20,6 +20,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/simulate_team"
+        android:orderInCategory="100"
+        android:title="队员模拟"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/simulate_finish"
         android:orderInCategory="100"
         android:title="@string/simulate_finish"
