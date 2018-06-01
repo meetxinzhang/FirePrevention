@@ -46,14 +46,13 @@ public class MapContent extends ConstraintLayout
     protected MyOrientation myOrientation;
 
     //presenter
-    private DetailContract.MainVi mainView;
+    //private DetailContract.MainVi mainView;
     private MapContentPresenter mapContentPresenter;
     private AnimationSetting aniSet;
 
     // View
     protected MapView mapView;
     protected TencentMap tencentMap;
-    private TextView angle;
 
     //overLayer
     private Marker me;
@@ -92,19 +91,18 @@ public class MapContent extends ConstraintLayout
         //uiSettings.setMyLocationButtonEnabled(true);// 定位我的位置按钮
         //！init map -- end！
 
-        angle = findViewById(R.id.angle);
         aniSet = new AnimationSetting(tencentMap, me);
     }
     public MapContent(Context context, AttributeSet attrs, int defStyle){
         super(context,attrs,defStyle);
     }
 
-    /**
-     * get interface's obj of MainView to control MainActivity
-     */
-    protected void setSelf2Presenter(DetailContract.MainVi mainView){
-        this.mainView = mainView;
-    }
+//    /**
+//     * get interface's obj of MainView to control MainActivity
+//     */
+//    protected void setSelf2Presenter(DetailContract.MainVi mainView){
+//        this.mainView = mainView;
+//    }
 
     /**
      * callback from MyOrientationListener
@@ -127,7 +125,7 @@ public class MapContent extends ConstraintLayout
     }
 
     @Override
-    public void onTaskChange(LatLng latLng,String sub,int area,int teamNum) {
+    public void onTaskLatLngChange(LatLng latLng) {
         if (destination == null){
             destination = tencentMap.addMarker(
                     new MarkerOptions().position(latLng).title("目的地"));
@@ -139,7 +137,7 @@ public class MapContent extends ConstraintLayout
         //route
         mapContentPresenter.getRoute(latLng_me, latLng);
         // notify MainActivity
-        mainView.onDestinationChange(sub,area,teamNum);
+        //mainView.onDestinationChange(sub,area,teamNum);
         aniSet.destinationPreview(latLng_me,latLng);
     }
 
@@ -155,7 +153,7 @@ public class MapContent extends ConstraintLayout
             polyline = null;
         }
         // notify MainActivity to change view
-        mainView.onDestinationFinish();
+        //mainView.onDestinationFinish();
     }
 
     @Override
@@ -194,10 +192,10 @@ public class MapContent extends ConstraintLayout
         }
     }
 
-    @Override
-    public void onSecurityChange(boolean safety) {
-        mainView.onSecurityChange(safety);
-    }
+//    @Override
+//    public void onSecurityChange(boolean safety) {
+//        mainView.onSecurityChange(safety);
+//    }
 
 
     /**

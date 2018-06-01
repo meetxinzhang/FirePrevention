@@ -8,6 +8,7 @@ import com.tencent.map.geolocation.TencentLocationManager;
 import com.tencent.map.geolocation.TencentLocationRequest;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 
+import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.MyApplication;
 
 
@@ -19,16 +20,16 @@ import cn.devin.fireprevention.MyApplication;
 public class MyLocation implements TencentLocationListener {
     private final String TAG = "MyLocation";
     private LatLng latLng = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
+    private DetailContract.MainServ mainServ;
 
     /*
     Singleton Pattern
     get Singleton by getInstance()
      */
-    public static MyLocation getInstance(){
-        return myLocation;
-    }
-    private static MyLocation myLocation = new MyLocation();
-    private MyLocation(){
+
+
+    public MyLocation(DetailContract.MainServ mainServ){
+        this.mainServ = mainServ;
         controLocLis(true);
     }
 
@@ -40,7 +41,7 @@ public class MyLocation implements TencentLocationListener {
             latLng.latitude = tencentLocation.getLatitude();
             latLng.longitude = tencentLocation.getLongitude();
             //notify the listener
-            myLocationChangeListener.onMyLocationChange(latLng);
+            mainServ.onMyLocationChange(latLng);
         }else {
             //failed
             controLocLis(false);//unregister
@@ -51,7 +52,7 @@ public class MyLocation implements TencentLocationListener {
             4-无法将WGS84坐标转换成GCJ-02坐标时的定位失败
             404-未知原因引起的定位失败
              */
-            myLocationChangeListener.onMyLocationChange(latLng);
+            mainServ.onMyLocationChange(latLng);
             Log.d(TAG, "onLocationChanged: "+i);
         }
     }
@@ -89,18 +90,5 @@ public class MyLocation implements TencentLocationListener {
             //删除位置监听器
             locationManager.removeUpdates(this);
         }
-    }
-
-
-
-    /**
-     * interface
-     */
-    private MyLocationChangeListener myLocationChangeListener;
-    public interface MyLocationChangeListener{
-        void onMyLocationChange(LatLng latLng);
-    }
-    public void setMyLocationChangeListener(MyLocationChangeListener myLocationChangeListener){
-        this.myLocationChangeListener = myLocationChangeListener;
     }
 }

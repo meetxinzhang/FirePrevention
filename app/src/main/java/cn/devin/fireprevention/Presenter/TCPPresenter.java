@@ -22,7 +22,7 @@ import cn.devin.fireprevention.Tools.ParseData;
  * TCP 协议封装类
  */
 
-public class TCPPresenter implements Runnable,DetailContract.TCPPre{
+public class TCPPresenter implements Runnable, DetailContract.TCPPre{
     private static String TAG = "TCPPresenter";
 
     private DetailContract.MainServ mainServ;
@@ -45,7 +45,10 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
     }
 
     /**
-     * 接受消息：1-队友位置， 2-火情分布， 3-新任务
+     * 接受消息：
+     * 1-队友位置， 2-火情分布，
+     * 3-新任务：两个坐标都设置为0，表示任务完成
+     * 0-聊天信息， 8-登录信息
      */
     @Override
     public void run() {
@@ -60,7 +63,7 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
 //            inputStream = new DataInputStream(socket.getInputStream());
 
             //通知后台服务：连接已成功建立
-            mainServ.onConnectSuccess();
+            //mainServ.onConnectSuccess();
 
             // 从InputStream当中读取客户端所发送的数据
             String s = null;
@@ -77,6 +80,16 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
                     case '3':
                         mainServ.onTaskChange(ParseData.getTask(s.substring(1)));
                         break;
+                    case '0':
+                        mainServ.onChatChange(s.substring(1));
+                        break;
+                    case '8':
+                        if (s.substring(1).equals('1')){
+                            mainServ.onConnectSuccess(true);
+                        }else {
+                            mainServ.onConnectSuccess(false);
+                        }
+                        break;
                     default:
                         Log.d(TAG, "run: + 收到的消息没有首位类型标记！");
                         break;
@@ -85,12 +98,13 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
             //br.close();
         }catch(IOException e){
             e.printStackTrace();
+            mainServ.onConnectSuccess(false);
         }
     }
 
 
     /**
-     * 发送位置，考虑到要重复调用，需要调用方自带线程
+     * 发送位时考虑到要重复调用，需要调用方自带线程
      * @param myLatLng 经纬度位置
      * @param type 位置类型：1-我的位置， 2-着火位置， 3-已灭火位置
      */
@@ -103,31 +117,47 @@ public class TCPPresenter implements Runnable,DetailContract.TCPPre{
 //            bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-8"));
 //            outputStream.writeBytes(type + json +"\n");
 //            outputStream.flush();
-            bw.write(type + json +"\n");
-            bw.flush();
+            if (bw != null){
+                bw.write(type + json +"\n");
+                bw.flush();
+            }else {
+                mainServ.onConnectSuccess(false);
+            }
+
         } catch (IOException e){
             //TODO Auto-generated catch block
             e.printStackTrace();
+            mainServ.onConnectSuccess(false);
         }
     }
 
 
-    // 发送文本消息
-    public void sendToServer(final String message, final int type){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    socket.getOutputStream().write((message+"\n").getBytes("UTF-8"));
-                    bw.write(type + message+"\n");
-                    bw.flush();
+    /**
+     * 发送登录，聊天信息
+     * 0-聊天信息， 8-登录信息
+     * @param message
+     * @param type
+     */
+    public void sendString(final String message, final int type){
+        if (bw==null){
+            mainServ.onConnectSuccess(false);
+        }else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        bw.write(type + message+"\n");
+                        bw.flush();
 
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        mainServ.onConnectSuccess(false);
+                    }
                 }
-            }
-        }).start();
+            }).start();
+
+        }
     }
 
 }

@@ -1,17 +1,14 @@
 package cn.devin.fireprevention.View;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,9 +21,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.devin.fireprevention.BasePresenter;
 import cn.devin.fireprevention.DetailContract;
-import cn.devin.fireprevention.Presenter.MainPresenter;
 import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.R;
 
@@ -50,9 +45,6 @@ public class MainActivity extends AppCompatActivity
     private MapContent mapContent;
     private FloatingActionButton fab_lock, fab_type, fab_fire;
 
-    // Pre
-    MainPresenter mainPresenter;
-
     // control Service by binder
     private MainService.TalkBinder talkBinder;
     private ServiceConnection connection = new ServiceConnection() {
@@ -61,7 +53,8 @@ public class MainActivity extends AppCompatActivity
             //get the object of TalkBinder
             talkBinder = (MainService.TalkBinder) iBinder;
             // set ServDataChangeListener
-            talkBinder.registerLis(mapContent);
+            talkBinder.registMainViLis(MainActivity.this);
+            talkBinder.registMapContViLis(mapContent);
         }
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
@@ -96,16 +89,11 @@ public class MainActivity extends AppCompatActivity
 
         // get the obj of MapContent
         mapContent = findViewById(R.id.map_content);
-        mapContent.setSelf2Presenter(this);
+        //mapContent.setSelf2Presenter(this);
 
         //init new task view
         newTask = findViewById(R.id.new_task);
         newTask.setVisibility(View.GONE);
-
-        // set presenter for this self
-        mainPresenter = new MainPresenter(this);
-        // check the permission
-        mainPresenter.checkPermission();
     }
 
     @Override
@@ -230,16 +218,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_chat) {
             // Handle the camera action
             ChatActivity.actionStart(this);
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -247,49 +225,25 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
     /**
-     * callback from presenter to check permission when running
-     * call presenter on onCreate()
+     * callback from MainVi
      */
     @Override
-    public void checkPermission(String[] permissions) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(permissions[0]) != PackageManager.PERMISSION_GRANTED)
-            {
-                requestPermissions(permissions, 0);
-            }
-        }
-    }
-
-    /**
-     * callback from permission request
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == 1){
-            //allow
-        }else {
-            //deny
-            Toast.makeText(this,"请允许全部权限!",Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * callback from MapContent
-     * @param sub subject of fire
-     */
-    @Override
-    public void onDestinationChange(String sub,int area,int teamNum) {
+    public void onTaskDescriChange(String sub,int area) {
         toolbar.setTitle("新任务！");
         this.task_sub.setText(sub);
         this.area.setText(area + "平方米");
-        this.teamNum.setText(teamNum + "人");
+
         newTask.setVisibility(View.VISIBLE);
     }
+
     @Override
-    public void onDestinationFinish() {
+    public void onTeamNumChange(int num) {
+        this.teamNum.setText(num + "人");
+    }
+
+    @Override
+    public void onTaskDescriFinish() {
         toolbar.setTitle(R.string.app_name);
         newTask.setVisibility(View.GONE);
     }
@@ -301,6 +255,18 @@ public class MainActivity extends AppCompatActivity
             fab_fire.setBackgroundResource(R.drawable.fire);
         }else {
             fab_fire.setBackgroundResource(R.drawable.outfire);
+        }
+    }
+
+    @Override
+    public void onChatChange(String s) {
+
+    }
+
+    @Override
+    public void onLogin(boolean isLogin) {
+        if (!isLogin){
+            Toast.makeText(this,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -351,6 +317,11 @@ public class MainActivity extends AppCompatActivity
 //            netPresenter = new NetPresenter( handler, ip, port);
 //            netPresenter.start();
 //        }
+    }
+
+    public static void actionStart(Activity activity){
+        Intent intent = new Intent(activity, MainActivity.class);
+        activity.startActivity(intent);
     }
 }
 

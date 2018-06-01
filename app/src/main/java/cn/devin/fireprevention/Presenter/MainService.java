@@ -13,6 +13,7 @@ import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.devin.fireprevention.BaseView;
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Model.Fire;
 import cn.devin.fireprevention.Model.MyLatLng;
@@ -28,7 +29,7 @@ import cn.devin.fireprevention.Tools.ParseData;
  */
 
 public class MainService extends Service
-        implements MyLocation.MyLocationChangeListener, DetailContract.MainServ{
+        implements DetailContract.MainServ{
 
     //args
     private final String TAG = "MainService";
@@ -40,6 +41,7 @@ public class MainService extends Service
     private MyLocation myLocation;
     private TCPPresenter tcpPre;
     private DetailContract.MapContVi mapContVi;
+    private DetailContract.MainVi mainVi;
 
 
     /**
@@ -48,15 +50,36 @@ public class MainService extends Service
     private TalkBinder talkBinder = new TalkBinder();
     public class TalkBinder extends Binder{
         // set ServDataChangeListener
-        public void registerLis(DetailContract.MapContVi mapContVi){
+        public void registMapContViLis(DetailContract.MapContVi mapContVi){
             MainService.this.mapContVi = mapContVi;
+        }
+
+        public void registMainViLis(DetailContract.MainVi mainVi){
+            MainService.this.mainVi = mainVi;
+        }
+
+        public void loginChat(String user, String passwd, int type){
+            tcpPre.sendString(user+","+passwd, type);
         }
 
         // send a location to WebService
         public void reportFire(){
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
+//                }
+//            }).start();
             tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
+
         }
         public void removeFire(){
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
+//                }
+//            }).start();
             tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
         }
 
@@ -69,12 +92,10 @@ public class MainService extends Service
         }
 
 
+
         //test a new task
         public void testNewTask(){
-            mapContVi.onTaskChange(latLng_des,
-                    "请急速前往灭火。",
-                    10,
-                    10);
+            mapContVi.onTaskLatLngChange(latLng_des);
         }
         //test a fire
         public void testNewFire(){
@@ -113,8 +134,8 @@ public class MainService extends Service
         super.onCreate();
         Log.d(TAG, "onCreate: "+"启动服务");
         //register the MyLocationChangeListener
-        myLocation = MyLocation.getInstance();
-        myLocation.setMyLocationChangeListener(this);
+
+        myLocation = new MyLocation(this);
 
         tcpPre = new TCPPresenter(this, null, 0);
         //开启线程，建立连接，同时保持接受数据
@@ -125,7 +146,7 @@ public class MainService extends Service
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind: "+"绑定服务");
-        myLocation.controLocLis(true);
+
         return talkBinder;
     }
 
@@ -145,7 +166,11 @@ public class MainService extends Service
      */
     @Override
     public void onMyLocationChange(LatLng latLng) {
-        mapContVi.onMyLocationChange(this.latLng_me = latLng);
+        if (mapContVi == null){
+            Log.d(TAG, "onMyLocationChange: mapContVi == null !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }else {
+            mapContVi.onMyLocationChange(this.latLng_me = latLng);
+        }
     }
 
 
@@ -153,27 +178,39 @@ public class MainService extends Service
      * callback from MainSer(which called in the TCPPre)
      */
     @Override
-    public void onConnectSuccess() {
-        Log.d(TAG, "run: 发送位置线程已开启");
-        //开启线程，定时发送我的位置
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
-                    Log.d(TAG, "run: 发送一次位置成功");
-                    SystemClock.sleep(2000);
+    public void onConnectSuccess(boolean isSuccess) {
+        if (isSuccess){
+            Log.d(TAG, "onConnectSuccess: 登录成功，发送位置线程已开启");
+            mainVi.onLogin(true);
+            //开启线程，定时发送我的位置
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true){
+                        tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
+                        Log.d(TAG, "run: 发送一次位置成功");
+                        SystemClock.sleep(2000);
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }else {
+            Log.d(TAG, "onConnectSuccess: 登录失败");
+            mainVi.onLogin(false);
+        }
+
     }
 
     @Override
     public void onTaskChange(Task task) {
-        mapContVi.onTaskChange(ParseData.getLatlng(task.getDestination()),
-                "请急速前往灭火。",
-                10,
-                10);
+        MyLatLng newDes = task.getDestination();
+        if (newDes.getLat()==0 && newDes.getLng()==0){
+            // 表示任务完成
+            mapContVi.onTaskFinish();
+            mainVi.onTaskDescriFinish();
+        }else {
+            mapContVi.onTaskLatLngChange(ParseData.getLatlng(newDes));
+            mainVi.onTaskDescriChange("请前往灭火，注意安全", 10);
+        }
     }
 
     @Override
@@ -186,6 +223,12 @@ public class MainService extends Service
     @Override
     public void onTeamChange(Team team) {
         mapContVi.onTeamChange(team.getPersons());
+        mainVi.onTeamNumChange(team.getPersons().size());
+    }
+
+    @Override
+    public void onChatChange(String s) {
+        mainVi.onChatChange(s);
     }
 
 
@@ -206,14 +249,17 @@ public class MainService extends Service
                 double b = latLng_me.longitude;
 
                 if (Math.sqrt(Math.pow(x-a, 2) + Math.pow(y-b, 2)) < 10){
-                    mapContVi.onSecurityChange(false);
+                    //mapContVi.onSecurityChange(false);
+                    mainVi.onSecurityChange(false);
                     break;
                 }else {
-                    mapContVi.onSecurityChange(true);
+                    //mapContVi.onSecurityChange(true);
+                    mainVi.onSecurityChange(true);
                 }
             }
         }else {
-            mapContVi.onSecurityChange(true);
+            //mapContVi.onSecurityChange(true);
+            mainVi.onSecurityChange(true);
         }
     }
 
