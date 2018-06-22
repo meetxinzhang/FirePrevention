@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     // Args
     private final String TAG = "MainActivity";
     private Boolean safety = true;
+    private Boolean isForeGround = false;
 
     // View
     private Toolbar toolbar;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+        isForeGround = true;
         mapContent.lifeCycleControl(1);
         // bind and start the service
         Intent bindIntent = new Intent(this, MainService.class);
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        isForeGround = false;
         mapContent.lifeCycleControl(3);
     }
 
@@ -266,7 +269,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLogin(boolean isLogin) {
         if (!isLogin){
-            Toast.makeText(this,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+            if(isForeGround){
+                Toast.makeText(this,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

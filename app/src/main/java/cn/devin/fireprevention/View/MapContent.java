@@ -83,7 +83,7 @@ public class MapContent extends ConstraintLayout
         tencentMap = mapView.getMap();
         me = tencentMap.addMarker(
                 new MarkerOptions().position(latLng_me).title("").snippet("DefaultMarker"));
-        me.setIcon(Tool.getIcon(R.drawable.airplane_blue));
+        me.setIcon(Tool.getIcon(R.drawable.air_bule));
         //UI setting of map
         UiSettings uiSettings = tencentMap.getUiSettings();
         uiSettings.setCompassEnabled(true); // 指南针按钮
@@ -214,14 +214,14 @@ public class MapContent extends ConstraintLayout
         switch (tencentMap.getMapType()) {
             case TencentMap.MAP_TYPE_NORMAL:
                 tencentMap.setMapType(TencentMap.MAP_TYPE_SATELLITE);
-                me.setIcon(Tool.getIcon(R.drawable.airplane_yellow));
+                me.setIcon(Tool.getIcon(R.drawable.air_yellow));
                 if (destination != null){
                     destination.setIcon(Tool.getIcon(R.drawable.location_yellow));
                 }
                 break;
             case TencentMap.MAP_TYPE_SATELLITE:
                 tencentMap.setMapType(TencentMap.MAP_TYPE_NORMAL);
-                me.setIcon(Tool.getIcon(R.drawable.airplane_blue));
+                me.setIcon(Tool.getIcon(R.drawable.air_bule));
                 if (destination != null){
                     destination.setIcon(Tool.getIcon(R.drawable.location_blue));
                 }
