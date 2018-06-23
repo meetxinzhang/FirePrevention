@@ -46,11 +46,14 @@ import cn.devin.fireprevention.R;
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
- * A login screen that offers login via email/password.
+ * Created by Devin on 2018/6/1 10:25
+ * @HomePage: http://meetdevin.cn/
+ * @Email: meetdevin.zh@outlook.com
+ * @Describe: 登录界面，输入用户名和密码
  */
 public class LoginActivity extends AppCompatActivity implements DetailContract.MainVi{
 
-    //args
+    //args references
     private Boolean isForeGround = false;
 
     //control Service by binder
@@ -172,7 +175,16 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+//        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+//            mPasswordView.setError(getString(R.string.error_invalid_password));
+//            focusView = mPasswordView;
+//            cancel = true;
+//        }
+        if (!TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        } else if (!isPasswordValid(password)){
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -183,7 +195,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(user)) {
+        } else if (!isUserValid(user)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -205,17 +217,17 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
             }
             talkBinder.loginChat(user, password, 8);
 
-//            mAuthTask = new UserLoginTask(email, password);
-//            mAuthTask.execute((Void) null);
         }
     }
 
-    private boolean isEmailValid(String email) {
+    /**
+     * 检验用户名和密码是否合法
+     */
+    private boolean isUserValid(String user) {
         //TODO: Replace this with your own logic
 
-        return true;
+        return user.length() > 3;
     }
-
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 3;
