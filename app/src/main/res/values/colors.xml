@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#a19a9c</color>
+    <color name="colorAccent">#31ba68</color>
 
     <color name="fire">#e7e70a</color>
     <color name="fire_border">#fd0307</color>
