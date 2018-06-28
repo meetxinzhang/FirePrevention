@@ -180,7 +180,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
 //            focusView = mPasswordView;
 //            cancel = true;
 //        }
-        if (!TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
@@ -306,7 +306,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
         }else {
             if(isForeGround){
                 showProgress(false);
-                Toast.makeText(this,"登录失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"登录服务器失败", Toast.LENGTH_SHORT).show();
             }
         }
     }

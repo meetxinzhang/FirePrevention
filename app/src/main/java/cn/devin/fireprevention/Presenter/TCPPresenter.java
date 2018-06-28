@@ -142,11 +142,14 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
         if (bw==null){
             mainServ.onConnectSuccess(false);
         }else {
+            Gson gson = new Gson();
+            final String json = gson.toJson(message);
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        bw.write(type + message+"\n");
+                        bw.write(type + json+"\n");
                         bw.flush();
 
                     } catch (IOException e) {
