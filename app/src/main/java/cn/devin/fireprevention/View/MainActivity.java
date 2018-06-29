@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
+        isForeGround = false;
         mapContent.lifeCycleControl(4);
     }
 
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isForeGround = false;
         mapContent.lifeCycleControl(6);
         //unbind the Service
         unbindService(connection);
@@ -270,7 +272,12 @@ public class MainActivity extends AppCompatActivity
     public void onLogin(boolean isLogin) {
         if (!isLogin){
             if(isForeGround){
-                Toast.makeText(this,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+                try {
+                    Toast.makeText(this,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+                }catch (Exception e){
+
+                }
+
             }
         }
     }

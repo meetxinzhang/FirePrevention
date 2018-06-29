@@ -35,6 +35,11 @@ public class ParseData {
         return task;
     }
 
+    public static String getString(String s){
+        String s1 = gson.fromJson(s, String.class);
+        return s1;
+    }
+
 
     /**
      * LatLng 和 MyLatLng 对象互相转换

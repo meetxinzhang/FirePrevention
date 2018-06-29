@@ -64,23 +64,23 @@ public class MainService extends Service
 
         // send a location to WebService
         public void reportFire(){
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
-//                }
-//            }).start();
-            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
+                }
+            }).start();
+//            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
 
         }
         public void removeFire(){
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
-//                }
-//            }).start();
-            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
+                }
+            }).start();
+//            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
         }
 
         public boolean updateIP(String ip, int port){

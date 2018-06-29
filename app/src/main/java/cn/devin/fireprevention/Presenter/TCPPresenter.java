@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -60,15 +61,17 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
             this.br = new BufferedReader(new InputStreamReader(socket.getInputStream(),"utf-8"));
             this.bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"utf-8"));
 //            outputStream = new DataOutputStream(socket.getOutputStream());
-//            inputStream = new DataInputStream(socket.getInputStream());
+            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
 
             //通知后台服务：连接已成功建立
-            //mainServ.onConnectSuccess();
+//            mainServ.onConnectSuccess(true);
 
             // 从InputStream当中读取客户端所发送的数据
-            String s = null;
-//            Object obj;
-            while ((s = br.readLine())!=null) {
+            String s;
+//            Byte obj;
+            while ((s = br.readLine()) != null) {
+
+                Log.d(TAG, "run: ??????????????????????????? " + s);
 
                 switch (s.charAt(0)){
                     case '1':
@@ -84,7 +87,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
                         mainServ.onChatChange(s.substring(1));
                         break;
                     case '8':
-                        if (s.substring(1).equals('1')){
+                        if (s.substring(1).equals("ok")){
                             mainServ.onConnectSuccess(true);
                         }else {
                             mainServ.onConnectSuccess(false);
@@ -142,14 +145,12 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
         if (bw==null){
             mainServ.onConnectSuccess(false);
         }else {
-            Gson gson = new Gson();
-            final String json = gson.toJson(message);
 
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        bw.write(type + json+"\n");
+                        bw.write(type + message+"\n");
                         bw.flush();
 
                     } catch (IOException e) {
