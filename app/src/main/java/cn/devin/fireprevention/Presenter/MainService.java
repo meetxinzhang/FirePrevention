@@ -70,8 +70,6 @@ public class MainService extends Service
                     tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
                 }
             }).start();
-//            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 2);
-
         }
         public void removeFire(){
             new Thread(new Runnable() {
@@ -80,7 +78,6 @@ public class MainService extends Service
                     tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
                 }
             }).start();
-//            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
         }
 
         public boolean updateIP(String ip, int port){
@@ -167,7 +164,7 @@ public class MainService extends Service
     @Override
     public void onMyLocationChange(LatLng latLng) {
         if (mapContVi == null){
-            Log.d(TAG, "onMyLocationChange: mapContVi == null !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
         }else {
             mapContVi.onMyLocationChange(this.latLng_me = latLng);
         }
@@ -188,7 +185,6 @@ public class MainService extends Service
                 public void run() {
                     while (true){
                         tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
-                        Log.d(TAG, "run: 发送一次位置成功");
                         SystemClock.sleep(2000);
                     }
                 }
@@ -203,13 +199,13 @@ public class MainService extends Service
     @Override
     public void onTaskChange(Task task) {
         MyLatLng newDes = task.getDestination();
-        if (newDes.getLat()==0 && newDes.getLng()==0){
+        if (newDes.getLng()==0 && newDes.getLng()==0){
             // 表示任务完成
             mapContVi.onTaskFinish();
             mainVi.onTaskDescriFinish();
         }else {
             mapContVi.onTaskLatLngChange(ParseData.getLatlng(newDes));
-            mainVi.onTaskDescriChange("请前往灭火，注意安全", 10);
+            mainVi.onTaskDescriChange(task.getTime(), task.getSubject(),task.getDescribe());
         }
     }
 

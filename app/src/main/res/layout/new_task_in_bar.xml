@@ -9,68 +9,42 @@
 
     <TextView
         android:id="@+id/task_sub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="任务主题"
         android:textSize="@dimen/new_task_subject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+        android:id="@+id/task_describe"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="距离:"
+        android:text="任务描述"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/task_sub" />
 
     <TextView
-        android:id="@+id/distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="8dp"
-        android:text="00米"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/task_sub" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="范围:"
-        app:layout_constraintStart_toEndOf="@+id/distance"
-        app:layout_constraintTop_toBottomOf="@+id/task_sub" />
-
-    <TextView
-        android:id="@+id/area"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="8dp"
-        android:text="10平方米"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/task_sub" />
-
-    <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="队友数:"
-        app:layout_constraintStart_toEndOf="@+id/area"
-        app:layout_constraintTop_toBottomOf="@+id/task_sub" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/task_describe" />
 
     <TextView
-        android:id="@+id/teamNum"
+        android:id="@+id/task_teamNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="10人"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/task_sub" />
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/task_describe" />
 
 </android.support.constraint.ConstraintLayout>

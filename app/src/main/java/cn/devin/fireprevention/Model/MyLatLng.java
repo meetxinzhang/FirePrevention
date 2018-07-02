@@ -4,28 +4,49 @@ package cn.devin.fireprevention.Model;
  * Created by Devin on 2018/3/30.
  */
 
-public class MyLatLng {
-    private Double lat;
-    private Double lng;
+public class MyLatLng
+{
+    //private int type;//位置信息的类别
+    private String ip;
+    private double lat;//维度
+    private double lng;//经度
 
-    public MyLatLng(Double lat, Double lng) {
-        this.lat = lat;
-        this.lng = lng;
+    //构造函数
+    public MyLatLng(double lat,double lng) {
+        //this.type=type;
+        this.lat=lat;
+        this.lng=lng;
+
     }
 
-    public Double getLat() {
+
+    public String getIp() {
+        return ip;
+    }
+
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+
+    public double getLat() {
         return lat;
     }
 
-    public Double getLng() {
-        return lng;
-    }
 
-    public void setLat(Double lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public void setLng(Double lng) {
+
+    public double getLng() {
+        return lng;
+    }
+
+
+    public void setLng(double lng) {
         this.lng = lng;
     }
+
 }

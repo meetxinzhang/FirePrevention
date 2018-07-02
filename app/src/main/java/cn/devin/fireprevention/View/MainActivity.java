@@ -5,7 +5,10 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
@@ -20,6 +23,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.lang.ref.WeakReference;
+import java.util.Date;
 
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Presenter.MainService;
@@ -41,10 +47,38 @@ public class MainActivity extends AppCompatActivity
 
     // View
     private Toolbar toolbar;
-    private TextView task_sub, area, teamNum;
+    private TextView task_sub, task_describe, task_teamNum;
     private ConstraintLayout newTask;
     private MapContent mapContent;
     private FloatingActionButton fab_lock, fab_type, fab_fire;
+
+    private static final int LOGIN_SUCC = 0, LOGIN_FAIL = 1;
+
+    private MyHandler myHandler = new MyHandler(this);
+
+    private static class MyHandler extends Handler {
+        private final WeakReference<MainActivity> weakReference;
+
+        private MyHandler(MainActivity thisActivity) {
+            this.weakReference = new WeakReference<>(thisActivity);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity mainActivity = weakReference.get();
+            if (mainActivity != null){
+                switch (msg.what){
+                    case LOGIN_SUCC:
+
+                        break;
+                    case LOGIN_FAIL:
+
+                        Toast.makeText(mainActivity,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+                    default:
+                        break;
+                }
+            }
+        }
+    };
 
     // control Service by binder
     private MainService.TalkBinder talkBinder;
@@ -72,8 +106,8 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         task_sub = findViewById(R.id.task_sub);
-        area = findViewById(R.id.area);
-        teamNum = findViewById(R.id.teamNum);
+        task_describe = findViewById(R.id.task_describe);
+        task_teamNum = findViewById(R.id.task_teamNum);
 
         fab_lock = findViewById(R.id.fab_lock);
         fab_type = findViewById(R.id.fab_type);
@@ -234,17 +268,17 @@ public class MainActivity extends AppCompatActivity
      * callback from MainVi
      */
     @Override
-    public void onTaskDescriChange(String sub,int area) {
-        toolbar.setTitle("新任务！");
+    public void onTaskDescriChange(Date date, String sub, String describe) {
+        toolbar.setTitle(sub);
         this.task_sub.setText(sub);
-        this.area.setText(area + "平方米");
+        this.task_describe.setText(describe);
 
         newTask.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onTeamNumChange(int num) {
-        this.teamNum.setText(num + "人");
+        this.task_teamNum.setText(num + "人");
     }
 
     @Override
@@ -272,12 +306,9 @@ public class MainActivity extends AppCompatActivity
     public void onLogin(boolean isLogin) {
         if (!isLogin){
             if(isForeGround){
-                try {
-                    Toast.makeText(this,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
-                }catch (Exception e){
-
-                }
-
+                Message msg = new Message();
+                msg.what = LOGIN_FAIL;
+                myHandler.sendMessage(msg);
             }
         }
     }

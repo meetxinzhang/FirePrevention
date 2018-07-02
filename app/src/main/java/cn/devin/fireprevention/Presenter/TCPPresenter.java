@@ -71,7 +71,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
 //            Byte obj;
             while ((s = br.readLine()) != null) {
 
-                Log.d(TAG, "run: ??????????????????????????? " + s);
+                Log.d(TAG, "run: !!!!!!!!!!!!!!!收到消息: " + s);
 
                 switch (s.charAt(0)){
                     case '1':
@@ -87,7 +87,8 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
                         mainServ.onChatChange(s.substring(1));
                         break;
                     case '8':
-                        if (s.substring(1).equals("ok")){
+                        Log.d(TAG, "run: "+ s.substring(1));
+                        if (s.substring(1).equals("1")){
                             mainServ.onConnectSuccess(true);
                         }else {
                             mainServ.onConnectSuccess(false);
@@ -123,6 +124,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
             if (bw != null){
                 bw.write(type + json +"\n");
                 bw.flush();
+                Log.d(TAG, "run: 发送一次位置成功，类型为: " + type);
             }else {
                 mainServ.onConnectSuccess(false);
             }
@@ -158,6 +160,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
                         e.printStackTrace();
                         mainServ.onConnectSuccess(false);
                     }
+
                 }
             }).start();
 

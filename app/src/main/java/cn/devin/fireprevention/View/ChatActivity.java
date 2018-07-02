@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Date;
+
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.Presenter.TCPPresenter;
@@ -81,7 +83,7 @@ public class ChatActivity extends Activity implements View.OnClickListener, Deta
 
 
     @Override
-    public void onTaskDescriChange(String sub, int area) {
+    public void onTaskDescriChange(Date date, String sub, String describe) {
 
     }
     @Override
