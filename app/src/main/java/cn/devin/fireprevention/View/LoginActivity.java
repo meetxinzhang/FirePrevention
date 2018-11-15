@@ -4,46 +4,36 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ComponentName;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.provider.ContactsContract;
+import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.ref.WeakReference;
+import java.util.Date;
 
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.R;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * Created by Devin on 2018/6/1 10:25
@@ -77,6 +67,34 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    private static final int LOGIN_SUCC = 0, LOGIN_FAIL = 1;
+
+    private MyHandler myHandler = new MyHandler(this);
+
+    private static class MyHandler extends Handler{
+        private final WeakReference<LoginActivity> weakReference;
+
+        private MyHandler(LoginActivity thisActivity) {
+            this.weakReference = new WeakReference<>(thisActivity);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            LoginActivity loginActivity = weakReference.get();
+            if (loginActivity != null){
+                switch (msg.what){
+                    case LOGIN_SUCC:
+                        loginActivity.showProgress(false);
+                        break;
+                    case LOGIN_FAIL:
+                        loginActivity.showProgress(false);
+                        Toast.makeText(loginActivity,"登录服务器失败", Toast.LENGTH_SHORT).show();
+                    default:
+                        break;
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,8 +232,10 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
                 showProgress(false);
                 MainActivity.actionStart(this);
                 this.finish();
+            }else {
+                talkBinder.loginChat(user, password, 8);
             }
-            talkBinder.loginChat(user, password, 8);
+
 
         }
     }
@@ -273,7 +293,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
      * DetailContract.MainVi 接口的回调
      */
     @Override
-    public void onTaskDescriChange(String sub, int area) {
+    public void onTaskDescriChange(Date date, String sub, String describe) {
 
     }
 
@@ -299,14 +319,16 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
 
     @Override
     public void onLogin(boolean isLogin) {
+        Message msg = new Message();
         if (isLogin){
-            showProgress(false);
+            msg.what = LOGIN_SUCC;
+            this.myHandler.sendMessage(msg);
             MainActivity.actionStart(this);
             this.finish();
         }else {
             if(isForeGround){
-                showProgress(false);
-                Toast.makeText(this,"登录服务器失败", Toast.LENGTH_SHORT).show();
+                msg.what = LOGIN_FAIL;
+                this.myHandler.sendMessage(msg);
             }
         }
     }

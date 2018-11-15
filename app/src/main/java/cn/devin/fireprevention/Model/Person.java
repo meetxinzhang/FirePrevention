@@ -5,27 +5,35 @@ package cn.devin.fireprevention.Model;
  */
 
 public class Person {
-    private int id;
-    private MyLatLng myLatLng;
 
-    public Person(int id, MyLatLng myLatLng){
-        this.id = id;
-        this.myLatLng = myLatLng;
+    //客户端Id，作为标示号
+    private int id;
+    //人的位置信息
+    private MyLatLng mylatlng;
+
+    //构造函数
+    public Person(int id, MyLatLng mylatlng)
+    {
+        this.id=id;
+        this.mylatlng=mylatlng;
     }
 
+
+    //get、set方法
     public int getId() {
         return id;
     }
-
-    public MyLatLng getMyLatLng() {
-        return myLatLng;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
-
-    public void setMyLatLng(MyLatLng myLatLng) {
-        this.myLatLng = myLatLng;
+    public MyLatLng getMyLatLng() {
+        return mylatlng;
     }
+    public void setMyLatLng(MyLatLng mylatlng) {
+        this.mylatlng = mylatlng;
+    }
+
+
+
+
 }

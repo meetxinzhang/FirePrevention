@@ -3,6 +3,7 @@ package cn.devin.fireprevention;
 import com.tencent.lbssearch.object.Location;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 
+import java.util.Date;
 import java.util.List;
 
 import cn.devin.fireprevention.Model.Fire;
@@ -22,7 +23,7 @@ public interface DetailContract {
     interface MainVi extends BaseView{
         //callback by MainPre
         //void checkPermission(String[] permissions);
-        void onTaskDescriChange(String sub,int area);
+        void onTaskDescriChange(Date date, String sub, String describe);
         void onTeamNumChange(int num);
         void onTaskDescriFinish();
         void onSecurityChange(boolean safety);
