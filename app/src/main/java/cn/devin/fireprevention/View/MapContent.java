@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 
@@ -71,6 +72,7 @@ public class MapContent extends ConstraintLayout
     public MapContent(Context context, AttributeSet attrs){
         super(context,attrs);
         LayoutInflater.from(context).inflate(R.layout.content_main,this);
+        Log.d(TAG, "MapContent: 2222333333333333333333333333333");
 
         //register OrientationChangeListener
         myOrientation = MyOrientation.getInstance();
