@@ -10,26 +10,20 @@ import java.util.List;
  */
 
 public class Fire {
+    List<MyLatLng> fireHead;
 
-    //这个列表存放燃火的位置
-    private  List<MyLatLng> fireHead;
-
-    //构造函数
-    public Fire(MyLatLng latlng) {
-        this.fireHead.add(latlng);//往列表中添加燃火的经纬度坐标
+    public Fire(MyLatLng latLng){
+        this.fireHead.add(latLng);
     }
 
-    //添加火的位置
-    public void addFireHead(MyLatLng latlng) {
-        this.fireHead.add(latlng);
+    public void addFireHead(MyLatLng latLng){
+        this.fireHead.add(latLng);
     }
 
-    //删除list的数据
-    public void subFireHead(int i) {
-        this.fireHead.subList(i, 1);
+    public void subFireHead(int i){
+        this.fireHead.subList(i,1);
     }
 
-    //获取List
     public List<MyLatLng> getFireHead() {
         return fireHead;
     }

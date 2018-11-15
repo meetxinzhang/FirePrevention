@@ -8,12 +8,9 @@ import java.util.List;
  */
 
 public class Team {
+    private List<Person> persons = new ArrayList<>();
 
-    private List<Person> persons=new ArrayList<Person>();//这个列表存放客户端信息，存放的是一个个的对象\
-
-    //构造函数
-    public Team(Person person)
-    {
+    public Team(Person person){
         persons.add(person);
     }
 
@@ -21,22 +18,16 @@ public class Team {
         return persons;
     }
 
-    //添加
-    public void addPerson(Person person) {
+    public void addPerson(Person person){
         persons.add(person);
     }
 
-    //删除
-    public void subPerson(int id)
-    {
-        for(int i=0;i<persons.size();i++)
-        {
-            if(id==persons.get(i).getId())
-            {
-                //去掉这一项
-            }
+    public void subPerson(int id){
+        for (int i=0;i<persons.size();i++){
+            if (id == persons.get(i).getId()){
+                // 去掉这一项
 
+            }
         }
     }
-
 }
