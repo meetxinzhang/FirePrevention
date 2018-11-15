@@ -211,21 +211,21 @@ public class MapContent extends ConstraintLayout
      * change the type of map
      */
     public void changeMapType(){
-        switch (tencentMap.getMapType()) {
-            case TencentMap.MAP_TYPE_NORMAL:
-                tencentMap.setMapType(TencentMap.MAP_TYPE_SATELLITE);
-                me.setIcon(Tool.getIcon(R.drawable.air_yellow));
-                if (destination != null){
-                    destination.setIcon(Tool.getIcon(R.drawable.location_yellow));
-                }
-                break;
-            case TencentMap.MAP_TYPE_SATELLITE:
-                tencentMap.setMapType(TencentMap.MAP_TYPE_NORMAL);
-                me.setIcon(Tool.getIcon(R.drawable.air_bule));
-                if (destination != null){
-                    destination.setIcon(Tool.getIcon(R.drawable.location_blue));
-                }
-                break;
+        int i = tencentMap.getMapType();
+        if (i == TencentMap.MAP_TYPE_NORMAL) {
+            tencentMap.setMapType(TencentMap.MAP_TYPE_SATELLITE);
+            me.setIcon(Tool.getIcon(R.drawable.air_yellow));
+            if (destination != null) {
+                destination.setIcon(Tool.getIcon(R.drawable.location_yellow));
+            }
+
+        } else if (i == TencentMap.MAP_TYPE_SATELLITE) {
+            tencentMap.setMapType(TencentMap.MAP_TYPE_NORMAL);
+            me.setIcon(Tool.getIcon(R.drawable.air_bule));
+            if (destination != null) {
+                destination.setIcon(Tool.getIcon(R.drawable.location_blue));
+            }
+
         }
 
     }
