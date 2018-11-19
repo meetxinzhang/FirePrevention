@@ -176,55 +176,71 @@ public class MainService extends Service
      */
     @Override
     public void onConnectSuccess(boolean isSuccess) {
-        if (isSuccess){
-            Log.d(TAG, "onConnectSuccess: 登录成功，发送位置线程已开启");
-            mainVi.onLogin(true);
-            //开启线程，定时发送我的位置
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true){
-                        tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
-                        SystemClock.sleep(2000);
+
+            if (isSuccess){
+                Log.d(TAG, "onConnectSuccess: 登录成功，发送位置线程已开启");
+                mainVi.onLogin(true);
+                //开启线程，定时发送我的位置
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true){
+                            tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me),1 );
+                            SystemClock.sleep(2000);
+                        }
                     }
-                }
-            }).start();
-        }else {
-            Log.d(TAG, "onConnectSuccess: 登录失败");
-            mainVi.onLogin(false);
-        }
+                }).start();
+            }else {
+                Log.d(TAG, "onConnectSuccess: 登录失败");
+                mainVi.onLogin(false);
+            }
 
     }
 
     @Override
     public void onTaskChange(Task task) {
-        MyLatLng newDes = task.getDestination();
-        if (newDes.getLng()==0 && newDes.getLng()==0){
-            // 表示任务完成
-            mapContVi.onTaskFinish();
-            mainVi.onTaskDescriFinish();
+        if (mapContVi == null){
+            Log.d(TAG, "onTaskChange: UI 绘制未完成！");
         }else {
-            mapContVi.onTaskLatLngChange(ParseData.getLatlng(newDes));
-            mainVi.onTaskDescriChange(task.getTime(), task.getSubject(),task.getDescribe());
+            MyLatLng newDes = task.getDestination();
+            if (newDes.getLng()==0 && newDes.getLng()==0){
+                // 表示任务完成
+                mapContVi.onTaskFinish();
+                mainVi.onTaskDescriFinish();
+            }else {
+                mapContVi.onTaskLatLngChange(ParseData.getLatlng(newDes));
+                mainVi.onTaskDescriChange(task.getTime(), task.getSubject(),task.getDescribe());
+            }
         }
+
     }
 
     @Override
     public void onFireChange(Fire fire) {
-        this.fireHead = fire.getFireHead();
-        mapContVi.onFireChange(ParseData.getLatLngs(fireHead));
-        checkSecurity();
+        if (mapContVi == null){
+            Log.d(TAG, "onTaskChange: UI 绘制未完成！");
+        }else {
+            this.fireHead = fire.getFireHead();
+            mapContVi.onFireChange(ParseData.getLatLngs(fireHead));
+            checkSecurity();
+        }
     }
 
     @Override
     public void onTeamChange(Team team) {
-        mapContVi.onTeamChange(team.getPersons());
-        mainVi.onTeamNumChange(team.getPersons().size());
+        if (mapContVi == null){
+            Log.d(TAG, "onTaskChange: UI 绘制未完成！");
+        }else {
+            mapContVi.onTeamChange(team.getPersons());
+            mainVi.onTeamNumChange(team.getPersons().size());
+        }
+
     }
 
     @Override
     public void onChatChange(String s) {
-        mainVi.onChatChange(s);
+
+            mainVi.onChatChange(s);
     }
 
 
