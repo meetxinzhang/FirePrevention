@@ -47,12 +47,12 @@ public class MainActivity extends AppCompatActivity
 
     // View
     private Toolbar toolbar;
-    private TextView task_sub, task_describe, task_teamNum;
+    private TextView task_describe, task_teamNum;
     private ConstraintLayout newTask;
     private MapContent mapContent;
     private FloatingActionButton fab_lock, fab_type, fab_fire;
 
-    private static final int LOGIN_SUCC = 0, LOGIN_FAIL = 1;
+    private static final int LOGIN_FAIL = 0, TASK_CHANGE = 1, TASK_FINISH = 2, TEAMNUM_CHANGE = 3, SAFE = 4, UNSAFE = 5;
 
     private MyHandler myHandler = new MyHandler(this);
 
@@ -67,12 +67,28 @@ public class MainActivity extends AppCompatActivity
             MainActivity mainActivity = weakReference.get();
             if (mainActivity != null){
                 switch (msg.what){
-                    case LOGIN_SUCC:
-
-                        break;
                     case LOGIN_FAIL:
-
                         Toast.makeText(mainActivity,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+                        break;
+                    case TASK_CHANGE:
+                        String [] temp = msg.obj.toString().split("/");
+                        mainActivity.toolbar.setTitle(temp[0]);
+                        mainActivity.task_describe.setText(temp[1]);
+                        mainActivity.newTask.setVisibility(View.VISIBLE);
+                        break;
+                    case TASK_FINISH:
+                        mainActivity.toolbar.setTitle(R.string.app_name);
+                        mainActivity.newTask.setVisibility(View.GONE);
+                        break;
+                    case TEAMNUM_CHANGE:
+                        mainActivity.task_teamNum.setText(msg.obj.toString());
+                        break;
+                    case SAFE:
+                        mainActivity.fab_fire.setBackgroundResource(R.drawable.fire);
+                        break;
+                    case UNSAFE:
+                        mainActivity.fab_fire.setBackgroundResource(R.drawable.outfire);
+                        break;
                     default:
                         break;
                 }
@@ -105,7 +121,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        task_sub = findViewById(R.id.task_sub);
         task_describe = findViewById(R.id.task_describe);
         task_teamNum = findViewById(R.id.task_teamNum);
 
@@ -269,32 +284,37 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onTaskDescriChange(Date date, String sub, String describe) {
-        toolbar.setTitle(sub);
-        this.task_sub.setText(sub);
-        this.task_describe.setText(describe);
-
-        newTask.setVisibility(View.VISIBLE);
+        Message msg = new Message();
+        msg.what = TASK_CHANGE;
+        msg.obj = sub + "/" + describe;
+        myHandler.sendMessage(msg);
     }
 
     @Override
     public void onTeamNumChange(int num) {
-        this.task_teamNum.setText(num + "人");
+        Message msg = new Message();
+        msg.what = TEAMNUM_CHANGE;
+        msg.obj = num + "人";
+        myHandler.sendMessage(msg);
     }
 
     @Override
     public void onTaskDescriFinish() {
-        toolbar.setTitle(R.string.app_name);
-        newTask.setVisibility(View.GONE);
+        Message msg = new Message();
+        msg.what = TASK_FINISH;
+        myHandler.sendMessage(msg);
     }
 
     @Override
     public void onSecurityChange(boolean safety) {
         this.safety = safety;
+        Message msg = new Message();
         if (safety){
-            fab_fire.setBackgroundResource(R.drawable.fire);
+            msg.what = SAFE;
         }else {
-            fab_fire.setBackgroundResource(R.drawable.outfire);
+            msg.what = UNSAFE;
         }
+        myHandler.sendMessage(msg);
     }
 
     @Override
