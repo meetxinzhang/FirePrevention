@@ -33,6 +33,9 @@ public class MainService extends Service
 
     //args
     private final String TAG = "MainService";
+    private String ip;
+    private int port;
+
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
     private LatLng latLng_des = new LatLng(28.134600, 112.99911); //目的地
     private List<MyLatLng> fireHead = new ArrayList<>();
@@ -42,6 +45,7 @@ public class MainService extends Service
     private TCPPresenter tcpPre;
     private DetailContract.MapContVi mapContVi;
     private DetailContract.MainVi mainVi;
+    private DataAccessObject dao;
 
 
     /**
@@ -134,7 +138,11 @@ public class MainService extends Service
 
         myLocation = new MyLocation(this);
 
-        tcpPre = new TCPPresenter(this, null, 0);
+        dao = new DataAccessObject(this);
+        ip = dao.getIP();
+        port = dao.getPort();
+
+        tcpPre = new TCPPresenter(this, ip, port);
         //开启线程，建立连接，同时保持接受数据
         new Thread(tcpPre).start();
     }
@@ -191,8 +199,13 @@ public class MainService extends Service
                     }
                 }).start();
             }else {
-                Log.d(TAG, "onConnectSuccess: 登录失败");
+                Log.d(TAG, "onConnectSuccess: 连接失败");
                 mainVi.onLogin(false);
+
+                // 重新建立 TCP 连接，之前的对象会被 Android 垃圾回收机制回收掉
+                tcpPre = new TCPPresenter(MainService.this, ip, port);
+                //开启线程，建立连接，同时保持接受数据
+                new Thread(tcpPre).start();
             }
 
     }

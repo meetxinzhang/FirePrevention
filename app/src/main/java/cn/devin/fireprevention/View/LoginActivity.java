@@ -32,6 +32,7 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 
 import cn.devin.fireprevention.DetailContract;
+import cn.devin.fireprevention.Presenter.DataAccessObject;
 import cn.devin.fireprevention.Presenter.MainService;
 import cn.devin.fireprevention.R;
 
@@ -133,8 +134,14 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     protected void onStart() {
         super.onStart();
         isForeGround = true;
+
         Intent bindIntent = new Intent(this, MainService.class);
         bindService(bindIntent, connection, BIND_AUTO_CREATE);
+
+//        DataAccessObject dao = new DataAccessObject(this);
+//        String ip = dao.getIP();
+//        int port = dao.getPort();
+//        talkBinder.updateIP(ip, port);
     }
 
     @Override
@@ -347,7 +354,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
 
         boolean isChange = talkBinder.updateIP(ip, port);
         if (isChange){
-            Toast.makeText(this,"已更新，正在重连...",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"正在连接...",Toast.LENGTH_SHORT).show();
         }
 
 //        if (!ip.equals(this.ip) | port != this.port){

@@ -180,8 +180,11 @@ public class MapContent extends ConstraintLayout
     public void onTeamChange(List<Person> list) {
         // TODO 这里以后要做逻辑优化，较小内存和时间开销
         for (int i=0; i<markerList.size();i++){
-            markerList.get(i).remove();
+//            markerList.get(i).remove();
+//            markerList.remove(i);
+            Marker temp = markerList.get(i);
             markerList.remove(i);
+            temp.remove();
         }
 
         Person person;
