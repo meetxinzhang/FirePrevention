@@ -9,29 +9,29 @@ import java.util.List;
 
 public class Team {
 
-    private List<Person> persons=new ArrayList<Person>();//这个列表存放客户端信息，存放的是一个个的对象\
+    private List<Person> list=new ArrayList<Person>();//这个列表存放客户端信息，存放的是一个个的对象\
 
     //构造函数
     public Team(Person person)
     {
-        persons.add(person);
+        list.add(person);
     }
 
     public List<Person> getPersons() {
-        return persons;
+        return list;
     }
 
     //添加
     public void addPerson(Person person) {
-        persons.add(person);
+        list.add(person);
     }
 
     //删除
     public void subPerson(int id)
     {
-        for(int i=0;i<persons.size();i++)
+        for(int i=0;i<list.size();i++)
         {
-            if(id==persons.get(i).getId())
+            if(id==list.get(i).getId())
             {
                 //去掉这一项
             }

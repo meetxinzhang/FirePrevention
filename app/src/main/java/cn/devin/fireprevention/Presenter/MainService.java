@@ -244,8 +244,12 @@ public class MainService extends Service
         if (mapContVi == null){
             Log.d(TAG, "onTaskChange: UI 绘制未完成！");
         }else {
-            mapContVi.onTeamChange(team.getPersons());
-            mainVi.onTeamNumChange(team.getPersons().size());
+            if (team.getPersons().get(0) == null){
+                Log.d(TAG, "onTeamChange: team.getPersons().get(0) == null!!!!!!!!!!!!!");
+            }else {
+                mapContVi.onTeamChange(team.getPersons());
+                mainVi.onTeamNumChange(team.getPersons().size());
+            }
         }
 
     }

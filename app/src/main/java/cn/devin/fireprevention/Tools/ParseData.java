@@ -39,6 +39,7 @@ public class ParseData {
     public static Team getTeam(String message){
         try {
             Team team = gson.fromJson(message, Team.class);
+            Log.d(TAG, "getTeam: "+ team.getPersons().size());
             return team;
         }catch (Exception e){
             Log.d(TAG, "getTeam: 捕获异常");

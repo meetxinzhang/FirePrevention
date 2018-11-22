@@ -188,12 +188,14 @@ public class MapContent extends ConstraintLayout
         }
 
         Person person;
+
         for (int i=0; i<list.size();i++){
             person = list.get(i);
             LatLng latLng = ParseData.getLatlng(person.getMyLatLng());
 
             markerList.add(tencentMap.addMarker(new MarkerOptions().position(latLng).title("").snippet("DefaultMarker")));
         }
+
     }
 
 //    @Override
