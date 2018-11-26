@@ -102,18 +102,17 @@ public class MainService extends Service
         //test a fire
         public void testNewFire(){
 
-            List<LatLng> list = new ArrayList();
-            list.add(new LatLng(28.135109,112.99911));
-            list.add(new LatLng(28.135209,112.99901));
-            list.add(new LatLng(28.135209,112.99891));
-            list.add(new LatLng(28.135309,112.99881));
-            list.add(new LatLng(28.135409,112.99871));
-            list.add(new LatLng(28.135509,112.99871));
-            list.add(new LatLng(28.135509,112.99881));
-            list.add(new LatLng(28.135409,112.99891));
-            list.add(new LatLng(28.135309,112.99901));
-            list.add(new LatLng(28.135209,112.99911));
-            mapContVi.onFireChange(list);
+            Fire fire = new Fire(ParseData.getMyLatLng(latLng_me));
+            fire.addFireHead(new MyLatLng(28.135109,112.99911));
+            fire.addFireHead(new MyLatLng(28.135209,112.99901));
+            fire.addFireHead(new MyLatLng(28.135209,112.99891));
+            fire.addFireHead(new MyLatLng(28.135309,112.99881));
+            fire.addFireHead(new MyLatLng(28.135409,112.99871));
+            fire.addFireHead(new MyLatLng(28.135509,112.99871));
+            fire.addFireHead(new MyLatLng(28.135209,112.99911));
+            fire.addFireHead(new MyLatLng(28.135309,112.99901));
+
+            onFireChange(fire);
         }
 
         public void testTeam(){

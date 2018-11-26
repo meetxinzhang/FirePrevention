@@ -84,10 +84,12 @@ public class MainActivity extends AppCompatActivity
                         mainActivity.task_teamNum.setText(msg.obj.toString());
                         break;
                     case SAFE:
-                        mainActivity.fab_fire.setBackgroundResource(R.drawable.fire);
+                        //mainActivity.fab_fire.setBackgroundResource(R.drawable.fire);
+                        mainActivity.fab_fire.setImageResource(R.drawable.fire);
                         break;
                     case UNSAFE:
-                        mainActivity.fab_fire.setBackgroundResource(R.drawable.outfire);
+                        //mainActivity.fab_fire.setBackgroundResource(R.drawable.outfire);
+                        mainActivity.fab_fire.setImageResource(R.drawable.outfire);
                         break;
                     default:
                         break;
