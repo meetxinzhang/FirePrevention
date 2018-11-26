@@ -12,6 +12,7 @@ import com.tencent.lbssearch.object.Location;
 import com.tencent.tencentmap.mapsdk.maps.MapView;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
+import com.tencent.tencentmap.mapsdk.maps.model.HeatOverlay;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
@@ -59,7 +60,8 @@ public class MapContent extends ConstraintLayout
     private Marker me;
     private List<Marker> markerList = new ArrayList<>();
     private Marker destination;
-    private Polygon polygon;
+    //private Polygon polygon;
+    private HeatOverlay heatOverlay;
     private Polyline polyline;
 
     /**
@@ -160,19 +162,28 @@ public class MapContent extends ConstraintLayout
     @Override
     public void onFireChange(List<LatLng> list) {
         if (list != null){
-            if (polygon == null){
-                polygon = tencentMap.addPolygon(OverLayerSetting.getPolygonOptions(list));
+//            if (polygon == null){
+//                polygon = tencentMap.addPolygon(OverLayerSetting.getPolygonOptions(list));
+//            }else {
+//                polygon.setOptions(OverLayerSetting.getPolygonOptions(list));
+//            }
+            if (heatOverlay == null){
+                heatOverlay = tencentMap.addHeatOverlay(OverLayerSetting.getHeatOverlayOptions(list));
             }else {
-                polygon.setOptions(OverLayerSetting.getPolygonOptions(list));
+                heatOverlay.updateData(OverLayerSetting.getNodesList(list));
             }
         }
     }
 
     @Override
     public void onFireFinish() {
-        if (polygon != null){
-            polygon.remove();
-            polygon = null;
+//        if (polygon != null){
+//            polygon.remove();
+//            polygon = null;
+//        }
+        if (heatOverlay != null){
+            heatOverlay.remove();
+            heatOverlay = null;
         }
     }
 

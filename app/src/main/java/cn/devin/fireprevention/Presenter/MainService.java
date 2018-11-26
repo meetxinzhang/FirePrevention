@@ -36,6 +36,7 @@ public class MainService extends Service
     private String ip;
     private int port;
 
+    private MyLatLng closestFire;
     private LatLng latLng_me = new LatLng(28.134509, 112.99911); //经纬度对象,中南林电子楼
     private LatLng latLng_des = new LatLng(28.134600, 112.99911); //目的地
     private List<MyLatLng> fireHead = new ArrayList<>();
@@ -79,7 +80,7 @@ public class MainService extends Service
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    tcpPre.sendMyLatlng(ParseData.getMyLatLng(latLng_me), 3);
+                    tcpPre.sendMyLatlng(closestFire, 3);
                 }
             }).start();
         }
@@ -256,7 +257,6 @@ public class MainService extends Service
 
     @Override
     public void onChatChange(String s) {
-
             mainVi.onChatChange(s);
     }
 
@@ -269,23 +269,35 @@ public class MainService extends Service
      */
     private void checkSecurity(){
         int n = fireHead.size();
+        double a = latLng_me.latitude;
+        double b = latLng_me.longitude;
+
         if (n != 0){
-            for (int i=0;i<n;i++){
+            this.closestFire = fireHead.get(0);
+            double closestDistance = Math.sqrt(
+                    Math.pow(this.closestFire.getLat()-a, 2) +
+                            Math.pow(this.closestFire.getLng()-b, 2));
+
+            for (int i=1;i<n;i++){
                 MyLatLng myLatLng = fireHead.get(i);
                 double x = myLatLng.getLat();
                 double y = myLatLng.getLng();
-                double a = latLng_me.latitude;
-                double b = latLng_me.longitude;
 
-                if (Math.sqrt(Math.pow(x-a, 2) + Math.pow(y-b, 2)) < 10){
-                    //mapContVi.onSecurityChange(false);
-                    mainVi.onSecurityChange(false);
-                    break;
-                }else {
-                    //mapContVi.onSecurityChange(true);
-                    mainVi.onSecurityChange(true);
+                double temp = Math.sqrt(Math.pow(x-a, 2) + Math.pow(y-b, 2));
+                if (temp < closestDistance){
+                    closestDistance = temp;
+                    this.closestFire = myLatLng;
                 }
             }
+
+            if (closestDistance < 10){
+                //mapContVi.onSecurityChange(false);
+                mainVi.onSecurityChange(false);
+            }else {
+                //mapContVi.onSecurityChange(true);
+                mainVi.onSecurityChange(true);
+            }
+
         }else {
             //mapContVi.onSecurityChange(true);
             mainVi.onSecurityChange(true);
