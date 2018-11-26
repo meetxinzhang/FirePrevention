@@ -72,10 +72,8 @@ public class MapContentPresenter implements DetailContract.MapContPre,
 
     @Override
     public void onSuccess(int i, BaseObject baseObject) {
-        Log.d(TAG, "onSuccess: 111111111111111111111");
         // is response of Location
         if (baseObject instanceof TranslateResultObject){
-            Log.d(TAG, "onSuccess: 22222222222222222222");
             TranslateResultObject oj = (TranslateResultObject)baseObject;
             if(oj.locations != null && oj.locations.size() >= 1){
                 location_me = oj.locations.get(0);

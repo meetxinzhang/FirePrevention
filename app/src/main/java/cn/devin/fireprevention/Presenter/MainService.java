@@ -289,7 +289,7 @@ public class MainService extends Service
                 }
             }
 
-            if (closestDistance < 10){
+            if (closestDistance < 0.0001){
                 //mapContVi.onSecurityChange(false);
                 mainVi.onSecurityChange(false);
             }else {

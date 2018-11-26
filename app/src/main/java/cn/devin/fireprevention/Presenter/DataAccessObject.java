@@ -24,29 +24,47 @@ public class DataAccessObject {
      * @param ip 服务器地址
      * @param port 端口号
      */
-    public void save(String ip, int port){
+    public void saveNet(String ip, int port){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("ip", ip);
         editor.putInt("port", port);
         editor.apply();
     }
 
-    /**
-     * 从数据库获取 ip
-     * @return String
-     */
+    //获取I
     public String getIP(){
         String ip = sharedPreferences.getString("ip", "119.29.138.102");
         return ip;
 
     }
 
-    /**
-     * 从数据库获取 端口号
-     * @return int
-     */
+    //获取端口
     public int getPort(){
         int port = sharedPreferences.getInt("port", 1988);
         return port;
+    }
+
+    /**
+     * 保存用户名和密码
+     * @param user 用户名
+     * @param passw 密码
+     */
+    public void saveUser(String user, String passw){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user", user);
+        editor.putString("passw", passw);
+        editor.apply();
+    }
+
+    //获取用户名
+    public String getUser(){
+        String user = sharedPreferences.getString("user","");
+        return user;
+    }
+
+    //获取密码
+    public String getPassw(){
+        String passw = sharedPreferences.getString("passw", "");
+        return passw;
     }
 }

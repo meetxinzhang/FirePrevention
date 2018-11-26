@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +48,9 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     //args references
     private Boolean isForeGround = false;
 
+    //presenter
+    private DataAccessObject dao;
+
     //control Service by binder
     private MainService.TalkBinder talkBinder;
     private ServiceConnection connection = new ServiceConnection() {
@@ -64,8 +68,11 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
 
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mUserView;
     private EditText mPasswordView;
+    private CheckBox checkBox;
+    private Button button;
+
     private View mProgressView;
     private View mLoginFormView;
 
@@ -101,26 +108,37 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        dao = new DataAccessObject(this);
+
         // Set up the login form.
-        mEmailView = findViewById(R.id.email);
+        mUserView = findViewById(R.id.user);
+        mUserView.setText(dao.getUser());
 
         mPasswordView = findViewById(R.id.password);
+        mPasswordView.setText(dao.getPassw());
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    //attemptLogin();
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        checkBox = findViewById(R.id.checkbox);
+        checkBox.setChecked(false);
+
+        button = findViewById(R.id.sign_in_button);
+        button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
+                if (checkBox.isChecked()){
+                    dao.saveUser(mUserView.getText().toString(), mPasswordView.getText().toString());
+                }
+
             }
         });
 
@@ -146,14 +164,15 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
 
     @Override
     protected void onPause() {
-        super.onPause();
         isForeGround = false;
+        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        isForeGround = false;
         unbindService(connection);
+        super.onDestroy();
     }
 
     /**
@@ -172,7 +191,6 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
                 SettingActivity.actionStart(this);
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -189,11 +207,11 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
 //        }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mUserView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String user = mEmailView.getText().toString();
+        String user = mUserView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -217,12 +235,12 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(user)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            mUserView.setError(getString(R.string.error_field_required));
+            focusView = mUserView;
             cancel = true;
         } else if (!isUserValid(user)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            mUserView.setError(getString(R.string.error_invalid_email));
+            focusView = mUserView;
             cancel = true;
         }
 

@@ -125,6 +125,9 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
                 bw.write(type + json +"\n");
                 bw.flush();
                 Log.d(TAG, "run: 发送一次位置成功，类型为: " + type);
+                if (type != 1){
+                    mainServ.onConnectSuccess(true);
+                }
             }else {
                 mainServ.onConnectSuccess(false);
             }

@@ -106,7 +106,7 @@ public class SettingActivity extends Activity implements View.OnClickListener{
 
             String ip = a+"."+b+"."+c+"."+d;
 
-            dao.save(ip, port);
+            dao.saveNet(ip, port);
 
             Intent intent = new Intent();
             intent.putExtra("ip", ip);

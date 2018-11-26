@@ -2,6 +2,7 @@ package cn.devin.fireprevention.View;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     private MapContent mapContent;
     private FloatingActionButton fab_lock, fab_type, fab_fire;
 
-    private static final int LOGIN_FAIL = 0, TASK_CHANGE = 1, TASK_FINISH = 2, TEAMNUM_CHANGE = 3, SAFE = 4, UNSAFE = 5;
+    private static final int  LOGIN_FAIL=0, LOGIN_SUCC=1, TASK_CHANGE=2, TASK_FINISH=3, TEAMNUM_CHANGE=4, SAFE=5, UNSAFE=6;
 
     private MyHandler myHandler = new MyHandler(this);
 
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity
                 switch (msg.what){
                     case LOGIN_FAIL:
                         Toast.makeText(mainActivity,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+                        break;
+                    case LOGIN_SUCC:
+                        Toast.makeText(mainActivity,"报告成功",Toast.LENGTH_SHORT).show();
                         break;
                     case TASK_CHANGE:
                         String [] temp = msg.obj.toString().split("/");
@@ -326,12 +331,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLogin(boolean isLogin) {
-        if (!isLogin){
-            if(isForeGround){
-                Message msg = new Message();
+        if(isForeGround){
+            Message msg = new Message();
+            if (!isLogin) {
                 msg.what = LOGIN_FAIL;
-                myHandler.sendMessage(msg);
+            }else {
+
             }
+            myHandler.sendMessage(msg);
         }
     }
 
@@ -350,14 +357,40 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.fab_fire:
                 if (safety){
-                    Toast.makeText(this,"报告为火情点",Toast.LENGTH_SHORT).show();
-                    talkBinder.reportFire();
+                    //talkBinder.reportFire();
+                    addAlertDialog("着火点");
                 }else {
-                    Toast.makeText(this,"报告为安全点",Toast.LENGTH_SHORT).show();
-                    talkBinder.removeFire();
+                    //talkBinder.removeFire();
+                    addAlertDialog("安全点");
                 }
                 break;
         }
+    }
+
+    //对话框
+    public void addAlertDialog(String s){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("注意：");
+        builder.setMessage("\n  是否报告为"+s+" ?");
+        // Add the buttons
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                if (safety){
+                    talkBinder.reportFire();
+                }else {
+                    talkBinder.removeFire();
+                }
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /**
