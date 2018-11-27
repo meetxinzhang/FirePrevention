@@ -234,8 +234,13 @@ public class MainService extends Service
             Log.d(TAG, "onTaskChange: UI 绘制未完成！");
         }else {
             this.fireHead = fire.getFireHead();
-            mapContVi.onFireChange(ParseData.getLatLngs(fireHead));
-            checkSecurity();
+            if (fireHead.size() == 0){
+                mapContVi.onTaskFinish();
+            }else {
+                mapContVi.onFireChange(ParseData.getLatLngs(fireHead));
+                checkSecurity();
+            }
+
         }
     }
 
