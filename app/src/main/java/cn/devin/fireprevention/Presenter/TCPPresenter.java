@@ -49,7 +49,8 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
      * 接受消息：
      * 1-队友位置， 2-火情分布，
      * 3-新任务：两个坐标都设置为0，表示任务完成
-     * 0-聊天信息， 8-登录信息
+     * 0-聊天信息
+     * 8-登录信息: 81-登录成功，80登录失败
      */
     @Override
     public void run() {
@@ -143,8 +144,8 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
     /**
      * 发送登录，聊天信息
      * 0-聊天信息， 8-登录信息
-     * @param message
-     * @param type
+     * @param message 信息内容
+     * @param type 消息类型
      */
     public void sendString(final String message, final int type){
         if (bw==null){

@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.ref.WeakReference;
 import java.util.Date;
 
 import cn.devin.fireprevention.DetailContract;
@@ -28,6 +29,12 @@ import cn.devin.fireprevention.R;
  */
 
 public class ChatActivity extends Activity implements View.OnClickListener, DetailContract.MainVi{
+    //args references
+    private Boolean isForeGround = false;
+    private static final int CHATMSG = 0, LOGIN_FAIL = 1;
+
+
+    //view
     TextView show_tv;
     EditText input_ed;
     Button send_b;
@@ -47,6 +54,32 @@ public class ChatActivity extends Activity implements View.OnClickListener, Deta
         }
     };
 
+    private MyHandler myHandler = new MyHandler(this);
+    private static class MyHandler extends Handler{
+        private final WeakReference<ChatActivity> weakReference;
+
+        private MyHandler(ChatActivity chatActivity) {
+            this.weakReference = new WeakReference<>(chatActivity);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            ChatActivity chatActivity = weakReference.get();
+            if (chatActivity != null){
+                switch (msg.what){
+                    case CHATMSG:
+                        String s = msg.obj.toString();
+                        chatActivity.show_tv.append("\n "+ s);
+                        break;
+                    case LOGIN_FAIL:
+                        Toast.makeText(chatActivity,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +93,22 @@ public class ChatActivity extends Activity implements View.OnClickListener, Deta
     @Override
     protected void onStart() {
         super.onStart();
+        isForeGround = true;
         Intent bindIntent = new Intent(this, MainService.class);
         bindService(bindIntent, connection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        isForeGround = false;
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        isForeGround = false;
+        unbindService(connection);
+        super.onDestroy();
     }
 
 
@@ -103,13 +150,22 @@ public class ChatActivity extends Activity implements View.OnClickListener, Deta
 
     @Override
     public void onChatChange(String s) {
-        show_tv.append("\n"+ s);
+        if (isForeGround){
+            Message msg = new Message();
+            msg.what = CHATMSG;
+            msg.obj = s;
+            myHandler.handleMessage(msg);
+        }
     }
 
     @Override
     public void onLogin(boolean isLogin) {
-        if (!isLogin){
-            Toast.makeText(this,"连接服务器失败，请检查网络",Toast.LENGTH_SHORT).show();
+        if (isForeGround){
+            if (!isLogin){
+                Message msg = new Message();
+                msg.what = LOGIN_FAIL;
+                myHandler.handleMessage(msg);
+            }
         }
     }
 

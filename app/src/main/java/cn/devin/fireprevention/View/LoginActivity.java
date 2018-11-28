@@ -137,6 +137,8 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
                 attemptLogin();
                 if (checkBox.isChecked()){
                     dao.saveUser(mUserView.getText().toString(), mPasswordView.getText().toString());
+                }else {
+                    dao.delUser();
                 }
 
             }

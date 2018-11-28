@@ -56,6 +56,12 @@ public class DataAccessObject {
         editor.apply();
     }
 
+    public void delUser(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("user");
+        editor.remove("passw");
+    }
+
     //获取用户名
     public String getUser(){
         String user = sharedPreferences.getString("user","");
