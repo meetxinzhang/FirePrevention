@@ -167,6 +167,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        isForeGround = true;
+        talkBinder.updateIP();
         mapContent.lifeCycleControl(2);
     }
 
@@ -405,7 +407,7 @@ public class MainActivity extends AppCompatActivity
         String ip = data.getStringExtra("ip");
         int port = data.getIntExtra("port", 1988);
 
-        boolean isChange = talkBinder.updateIP(ip, port);
+        boolean isChange = talkBinder.updateIP();
         if (isChange){
             Toast.makeText(this,"已更新，正在重连...",Toast.LENGTH_SHORT).show();
         }

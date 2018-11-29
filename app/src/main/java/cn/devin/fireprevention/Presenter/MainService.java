@@ -85,7 +85,9 @@ public class MainService extends Service
             }).start();
         }
 
-        public boolean updateIP(String ip, int port){
+        public boolean updateIP(){
+            ip = dao.getIP();
+            port = dao.getPort();
             // 重新建立 TCP 连接，之前的对象会被 Android 垃圾回收机制回收掉
             tcpPre = new TCPPresenter(MainService.this, ip, port);
             //开启线程，建立连接，同时保持接受数据
@@ -137,12 +139,7 @@ public class MainService extends Service
         myLocation = new MyLocation(this);
 
         dao = new DataAccessObject(this);
-        ip = dao.getIP();
-        port = dao.getPort();
-
-        tcpPre = new TCPPresenter(this, ip, port);
-        //开启线程，建立连接，同时保持接受数据
-        new Thread(tcpPre).start();
+        talkBinder.updateIP();
     }
 
     @Nullable
@@ -205,7 +202,6 @@ public class MainService extends Service
                 //开启线程，建立连接，同时保持接受数据
                 new Thread(tcpPre).start();
             }
-
     }
 
     @Override

@@ -372,7 +372,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
         String ip = data.getStringExtra("ip");
         int port = data.getIntExtra("port", 1988);
 
-        boolean isChange = talkBinder.updateIP(ip, port);
+        boolean isChange = talkBinder.updateIP();
         if (isChange){
             Toast.makeText(this,"正在连接...",Toast.LENGTH_SHORT).show();
         }
