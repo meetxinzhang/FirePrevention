@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
                         break;
                     case LOGIN_FAIL:
                         loginActivity.showProgress(false);
-                        Toast.makeText(loginActivity,"登录服务器失败", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(loginActivity,"登录服务器失败", Toast.LENGTH_SHORT).show();
                     default:
                         break;
                 }
@@ -260,6 +260,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
                 MainActivity.actionStart(this);
                 this.finish();
             }else {
+                talkBinder.updateIP();
                 talkBinder.loginChat(user, password, 8);
             }
 
@@ -369,13 +370,13 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String ip = data.getStringExtra("ip");
-        int port = data.getIntExtra("port", 1988);
-
-        boolean isChange = talkBinder.updateIP();
-        if (isChange){
-            Toast.makeText(this,"正在连接...",Toast.LENGTH_SHORT).show();
-        }
+//        String ip = data.getStringExtra("ip");
+//        int port = data.getIntExtra("port", 1988);
+//
+//        boolean isChange = talkBinder.updateIP();
+//        if (isChange){
+//            Toast.makeText(this,"正在连接...",Toast.LENGTH_SHORT).show();
+//        }
 
 //        if (!ip.equals(this.ip) | port != this.port){
 //            textView_show.append("已更新，正在重连..."+"\n");
