@@ -139,7 +139,13 @@ public class MainService extends Service
         myLocation = new MyLocation(this);
 
         dao = new DataAccessObject(this);
-        talkBinder.updateIP();
+
+        ip = dao.getIP();
+        port = dao.getPort();
+        // 重新建立 TCP 连接，之前的对象会被 Android 垃圾回收机制回收掉
+        tcpPre = new TCPPresenter(MainService.this, ip, port);
+        //开启线程，建立连接，同时保持接受数据
+        new Thread(tcpPre).start();
     }
 
     @Nullable
@@ -210,7 +216,7 @@ public class MainService extends Service
             Log.d(TAG, "onTaskChange: UI 绘制未完成！");
         }else {
             MyLatLng newDes = task.getDestination();
-            if (newDes.getLng()==0 && newDes.getLng()==0){
+            if (newDes.getLng()==0 & newDes.getLng()==0){
                 // 表示任务完成
                 mapContVi.onTaskFinish();
                 mainVi.onTaskDescriFinish();

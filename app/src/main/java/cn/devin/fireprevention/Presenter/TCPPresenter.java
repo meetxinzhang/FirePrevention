@@ -125,7 +125,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
             if (bw != null){
                 bw.write(type + json +"\n");
                 bw.flush();
-                Log.d(TAG, "run: 发送一次位置成功，类型为: " + type);
+                Log.d(TAG, "sendMyLatlng: 发送一次位置成功，类型为: " + type);
                 if (type != 1){
                     mainServ.onConnectSuccess(true);
                 }
@@ -151,18 +151,17 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
         if (bw==null){
             mainServ.onConnectSuccess(false);
         }else {
-
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         bw.write(type + message+"\n");
                         bw.flush();
-
                     } catch (IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
-                        mainServ.onConnectSuccess(false);
+                        Log.d(TAG, "sendString: "+e.toString());
+                        //mainServ.onConnectSuccess(false);
                     }
 
                 }

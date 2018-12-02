@@ -79,7 +79,7 @@ public class OverLayerSetting {
 
                     @Override
                     public void onHeatMapReady() {
-                        Log.d(TAG, "onHeatMapReady: 热力图数据准备完毕！");
+                        //Log.d(TAG, "onHeatMapReady: 热力图数据准备完毕！");
                     }
                 });
 

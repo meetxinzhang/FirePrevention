@@ -168,7 +168,9 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         isForeGround = true;
-        talkBinder.updateIP();
+        if (talkBinder != null){
+            talkBinder.updateIP();
+        }
         mapContent.lifeCycleControl(2);
     }
 

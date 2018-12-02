@@ -25,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,10 +44,11 @@ import cn.devin.fireprevention.R;
  * @Email: meetdevin.zh@outlook.com
  * @Describe: 登录界面，输入用户名和密码
  */
-public class LoginActivity extends AppCompatActivity implements DetailContract.MainVi{
+public class LoginActivity extends AppCompatActivity implements DetailContract.MainVi, OnClickListener{
 
     //args references
     private Boolean isForeGround = false;
+    private Boolean isChecked = false;
 
     //presenter
     private DataAccessObject dao;
@@ -108,14 +110,39 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        checkBox = findViewById(R.id.checkbox);
+        checkBox.setChecked(false);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    isChecked = true;
+                }else {
+                    isChecked = false;
+                }
+            }
+        });
+
+        button = findViewById(R.id.sign_in_button);
+        button.setOnClickListener(this);
+
+        //获取保存的用户名和密码
         dao = new DataAccessObject(this);
+        String user = dao.getUser();
+        String passw = dao.getPassw();
+        if (user.equals("") && passw.equals("")){
+            checkBox.setChecked(false);
+        }else {
+            checkBox.setChecked(true);
+        }
 
         // Set up the login form.
         mUserView = findViewById(R.id.user);
-        mUserView.setText(dao.getUser());
+        mUserView.setText(user);
 
         mPasswordView = findViewById(R.id.password);
-        mPasswordView.setText(dao.getPassw());
+        mPasswordView.setText(passw);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -124,23 +151,6 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
                     return true;
                 }
                 return false;
-            }
-        });
-
-        checkBox = findViewById(R.id.checkbox);
-        checkBox.setChecked(false);
-
-        button = findViewById(R.id.sign_in_button);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-                if (checkBox.isChecked()){
-                    dao.saveUser(mUserView.getText().toString(), mPasswordView.getText().toString());
-                }else {
-                    dao.delUser();
-                }
-
             }
         });
 
@@ -196,6 +206,17 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.sign_in_button){
+            if (isChecked){
+                dao.saveUser(mUserView.getText().toString(), mPasswordView.getText().toString());
+            }else {
+                dao.delUser();
+            }
+            attemptLogin();
+        }
+    }
 
 
     /**
@@ -260,7 +281,6 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
                 MainActivity.actionStart(this);
                 this.finish();
             }else {
-                talkBinder.updateIP();
                 talkBinder.loginChat(user, password, 8);
             }
 
@@ -370,6 +390,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        talkBinder.updateIP();
 //        String ip = data.getStringExtra("ip");
 //        int port = data.getIntExtra("port", 1988);
 //

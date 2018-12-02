@@ -195,7 +195,10 @@ public class MapContent extends ConstraintLayout
 //            markerList.remove(i);
             Marker temp = markerList.get(i);
             markerList.remove(i);
-            temp.remove();
+            if (temp != null){
+                temp.remove();
+            }
+
         }
 
         Person person;
