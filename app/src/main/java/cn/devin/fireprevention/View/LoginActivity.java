@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
         setContentView(R.layout.activity_login);
 
         checkBox = findViewById(R.id.checkbox);
-        checkBox.setChecked(false);
+        //checkBox.setChecked(false);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
         dao = new DataAccessObject(this);
         String user = dao.getUser();
         String passw = dao.getPassw();
-        if (user.equals("") && passw.equals("")){
+        if (user.length() < 3 && passw.length() < 3){
             checkBox.setChecked(false);
         }else {
             checkBox.setChecked(true);
