@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity
         String ip = data.getStringExtra("ip");
         int port = data.getIntExtra("port", 1988);
 
-        boolean isChange = talkBinder.updateIP();
+        boolean isChange = talkBinder.updateIP(ip, port);
         if (isChange){
             Toast.makeText(this,"已更新，正在重连...",Toast.LENGTH_SHORT).show();
         }
