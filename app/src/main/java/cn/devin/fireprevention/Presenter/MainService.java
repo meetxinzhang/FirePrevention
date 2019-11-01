@@ -11,9 +11,9 @@ import android.util.Log;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import cn.devin.fireprevention.BaseView;
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Model.Fire;
 import cn.devin.fireprevention.Model.MyLatLng;
@@ -85,7 +85,9 @@ public class MainService extends Service
             }).start();
         }
 
-        public boolean updateIP(String ip, int port){
+        public boolean updateIP(){
+            ip = dao.getIP();
+            port = dao.getPort();
             // 重新建立 TCP 连接，之前的对象会被 Android 垃圾回收机制回收掉
             tcpPre = new TCPPresenter(MainService.this, ip, port);
             //开启线程，建立连接，同时保持接受数据
@@ -98,6 +100,7 @@ public class MainService extends Service
         //test a new task
         public void testNewTask(){
             mapContVi.onTaskLatLngChange(latLng_des);
+            mainVi.onTaskDescriChange(new Date(), "测试任务标题", "测试任务描述");
         }
         //test a fire
         public void testNewFire(){
@@ -119,11 +122,13 @@ public class MainService extends Service
             list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135209,112.99891))));
             list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135209,112.99911))));
             mapContVi.onTeamChange(list);
+            mainVi.onTeamNumChange(list.size());
         }
 
         public void testFinish(){
             mapContVi.onTaskFinish();
             mapContVi.onFireFinish();
+            mainVi.onTaskDescriFinish();
         }
     }
 

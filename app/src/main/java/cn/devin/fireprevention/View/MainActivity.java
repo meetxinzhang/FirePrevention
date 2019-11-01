@@ -8,21 +8,20 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,10 +82,12 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case TASK_FINISH:
                         mainActivity.toolbar.setTitle(R.string.app_name);
-                        mainActivity.newTask.setVisibility(View.GONE);
+                        mainActivity.task_describe.setText("暂无任务");
+//                        mainActivity.newTask.setVisibility(View.GONE);
                         break;
                     case TEAMNUM_CHANGE:
                         mainActivity.task_teamNum.setText(msg.obj.toString());
+                        mainActivity.newTask.setVisibility(View.VISIBLE);
                         break;
                     case SAFE:
                         //mainActivity.fab_fire.setBackgroundResource(R.drawable.fire);
@@ -409,7 +410,7 @@ public class MainActivity extends AppCompatActivity
         String ip = data.getStringExtra("ip");
         int port = data.getIntExtra("port", 1988);
 
-        boolean isChange = talkBinder.updateIP(ip, port);
+        boolean isChange = talkBinder.updateIP();
         if (isChange){
             Toast.makeText(this,"已更新，正在重连...",Toast.LENGTH_SHORT).show();
         }

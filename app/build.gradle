@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     defaultConfig {
         applicationId "cn.devin.fireprevention"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 2
         versionName "2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,16 +27,18 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //这里始终使用最新的稳定版本，用户也可以指定 4.0.3.2 之后的地图 sdk 版本号
-    implementation 'com.tencent.map:tencent-map-vector-sdk:latest.release'
-    implementation files('libs/TencentMapSearch_v1.1.7.490d100.jar')
-    implementation files('libs/TencentLocationSdk_v6.2.5.3_r15b3b3cc_20171103_115903.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.tencent.map:tencent-map-vector-sdk:4.2.9'
+    implementation 'com.tencent.map.geolocation:TencentLocationSdk-openplatform:7.2.4'
+//    implementation files('libs/TencentMapSearch_v1.1.7.490d100.jar')
+//    implementation files('libs/TencentLocationSdk_v6.2.5.3_r15b3b3cc_20171103_115903.jar')
     implementation 'org.kie.modules:com-google-code-gson:6.5.0.Final'
 }

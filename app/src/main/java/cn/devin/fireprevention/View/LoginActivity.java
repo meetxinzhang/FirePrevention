@@ -391,15 +391,12 @@ public class LoginActivity extends AppCompatActivity implements DetailContract.M
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        talkBinder.updateIP();
+//        talkBinder.updateIP();
 
-       String ip = data.getStringExtra("ip");
-       int port = data.getIntExtra("port", 1988);
-
-       boolean isChange = talkBinder.updateIP();
-       if (isChange){
-           Toast.makeText(this,"正在连接...",Toast.LENGTH_SHORT).show();
-       }
+        boolean isChange = talkBinder.updateIP();
+        if (isChange){
+            Toast.makeText(this,"正在连接...",Toast.LENGTH_SHORT).show();
+        }
 
         // String ip = data.getStringExtra("ip");
         // int port = data.getIntExtra("port", 1988);

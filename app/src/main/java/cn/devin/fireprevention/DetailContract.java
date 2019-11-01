@@ -1,6 +1,5 @@
 package cn.devin.fireprevention;
 
-import com.tencent.lbssearch.object.Location;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 
 import java.util.Date;
@@ -11,7 +10,6 @@ import cn.devin.fireprevention.Model.MyLatLng;
 import cn.devin.fireprevention.Model.Person;
 import cn.devin.fireprevention.Model.Task;
 import cn.devin.fireprevention.Model.Team;
-import cn.devin.fireprevention.Presenter.MainService;
 
 /**
  * Created by Devin on 2018/1/23.
@@ -34,7 +32,7 @@ public interface DetailContract {
     // 地图内容管理类 的接口
     interface MapContVi extends BaseView{
         // callback by MapContPre
-        void onRouteChange(List<Location> list);
+        void onRouteChange(List<LatLng> list);
 
         // callback by MainServ
         void onMyLocationChange(LatLng latLng);

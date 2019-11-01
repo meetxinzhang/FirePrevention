@@ -4,29 +4,26 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.widget.TextView;
 
-import com.tencent.lbssearch.object.Location;
+import com.tencent.map.sdk.utilities.heatmap.HeatMapTileProvider;
 import com.tencent.tencentmap.mapsdk.maps.MapView;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.UiSettings;
-import com.tencent.tencentmap.mapsdk.maps.model.HeatOverlay;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
-import com.tencent.tencentmap.mapsdk.maps.model.Polygon;
 import com.tencent.tencentmap.mapsdk.maps.model.Polyline;
+import com.tencent.tencentmap.mapsdk.maps.model.TileOverlay;
+import com.tencent.tencentmap.mapsdk.maps.model.TileOverlayOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.devin.fireprevention.DetailContract;
 import cn.devin.fireprevention.Model.Person;
-import cn.devin.fireprevention.Presenter.MainService;
-import cn.devin.fireprevention.Presenter.MapContentPresenter;
 import cn.devin.fireprevention.Presenter.MyOrientation;
+import cn.devin.fireprevention.Presenter.NavigationPresenter;
 import cn.devin.fireprevention.R;
 import cn.devin.fireprevention.Tools.ParseData;
 import cn.devin.fireprevention.Tools.Tool;
@@ -49,7 +46,7 @@ public class MapContent extends ConstraintLayout
 
     //presenter
     //private DetailContract.MainVi mainView;
-    private MapContentPresenter mapContentPresenter;
+    private NavigationPresenter mapContentPresenter;
     private AnimationSetting aniSet;
 
     // View
@@ -60,8 +57,10 @@ public class MapContent extends ConstraintLayout
     private Marker me;
     private List<Marker> markerList = new ArrayList<>();
     private Marker destination;
+    // 热力图
+    private HeatMapTileProvider heatMapTileProvider;
+    private TileOverlay tileOverlay;
     //private Polygon polygon;
-    private HeatOverlay heatOverlay;
     private Polyline polyline;
 
     /**
@@ -79,7 +78,7 @@ public class MapContent extends ConstraintLayout
         myOrientation = MyOrientation.getInstance();
         myOrientation.setOnOrientationChangeListener(this);
 
-        mapContentPresenter = new  MapContentPresenter(this);
+        mapContentPresenter = new NavigationPresenter(this);
 
         //！init map -- start！
         mapView = findViewById(R.id.mapView);
@@ -116,6 +115,7 @@ public class MapContent extends ConstraintLayout
         aniSet.spin_Jump_MyEyesClosed(rotate);
         //angle.setText("from: " + rotate);
     }
+
 
     /**
      * callback from MapContVi
@@ -167,13 +167,20 @@ public class MapContent extends ConstraintLayout
 //            }else {
 //                polygon.setOptions(OverLayerSetting.getPolygonOptions(list));
 //            }
-            if (heatOverlay == null){
-                heatOverlay = tencentMap.addHeatOverlay(OverLayerSetting.getHeatOverlayOptions(list));
+            if (tileOverlay == null){
+//                heatOverlay = tencentMap.addHeatOverlay(OverLayerSetting.getHeatOverlayOptions(list));
+                //在当前地图上添加热力图
+                heatMapTileProvider = OverLayerSetting.getHeatMapTileProvider(list);
+                tileOverlay = tencentMap.addTileOverlay(new TileOverlayOptions().tileProvider(heatMapTileProvider));
+
             }else {
-                heatOverlay.updateData(OverLayerSetting.getNodesList(list));
+                heatMapTileProvider.setData(list);
+                tileOverlay.clearTileCache();
+                tileOverlay.reload();
             }
         }
     }
+
 
     @Override
     public void onFireFinish() {
@@ -181,15 +188,15 @@ public class MapContent extends ConstraintLayout
 //            polygon.remove();
 //            polygon = null;
 //        }
-        if (heatOverlay != null){
-            heatOverlay.remove();
-            heatOverlay = null;
+        if (tileOverlay != null){
+            tileOverlay.remove();
+            tileOverlay = null;
         }
     }
 
     @Override
     public void onTeamChange(List<Person> list) {
-        // TODO 这里以后要做逻辑优化，较小内存和时间开销
+        // TODO 这里以后要做逻辑优化，减小内存和时间开销
         for (int i=0; i<markerList.size();i++){
 //            markerList.get(i).remove();
 //            markerList.remove(i);
@@ -219,11 +226,15 @@ public class MapContent extends ConstraintLayout
 
 
     /**
-     * callback from MapContentPresenter
+     * callback from NavigationPresenter
      * @param list
      */
+//    @Override
+//    public void onRouteChange(List<Location> list) {
+//        polyline = tencentMap.addPolyline(OverLayerSetting.drawLine(list));
+//    }
     @Override
-    public void onRouteChange(List<Location> list) {
+    public void onRouteChange(List<LatLng> list) {
         polyline = tencentMap.addPolyline(OverLayerSetting.drawLine(list));
     }
 
@@ -280,4 +291,5 @@ public class MapContent extends ConstraintLayout
                 break;
         }
     }
+
 }
