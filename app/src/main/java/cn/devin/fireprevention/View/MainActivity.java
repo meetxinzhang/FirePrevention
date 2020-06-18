@@ -124,9 +124,9 @@ public class MainActivity extends AppCompatActivity
      * ----------------------------- life-cycle start ---------------------------
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {        setContentView(R.layout.activity_main);
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         task_describe = findViewById(R.id.task_describe);
@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity
     public void onTeamNumChange(int num) {
         Message msg = new Message();
         msg.what = TEAMNUM_CHANGE;
-        msg.obj = num + "人";
+        msg.obj = num + 1 + "人";
         myHandler.sendMessage(msg);
     }
 
@@ -340,8 +340,6 @@ public class MainActivity extends AppCompatActivity
             Message msg = new Message();
             if (!isLogin) {
                 msg.what = LOGIN_FAIL;
-            }else {
-
             }
             myHandler.sendMessage(msg);
         }

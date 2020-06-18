@@ -205,18 +205,18 @@ public class MapContent extends ConstraintLayout
             if (temp != null){
                 temp.remove();
             }
-
         }
 
-        Person person;
+        if (list.size() > 0 ){
+            Person person;
 
-        for (int i=0; i<list.size();i++){
-            person = list.get(i);
-            LatLng latLng = ParseData.getLatlng(person.getMyLatLng());
+            for (int i=0; i<list.size();i++){
+                person = list.get(i);
+                LatLng latLng = ParseData.getLatlng(person.getMyLatLng());
 
-            markerList.add(tencentMap.addMarker(new MarkerOptions().position(latLng).title("").snippet("DefaultMarker")));
+                markerList.add(tencentMap.addMarker(new MarkerOptions().position(latLng).title("").snippet("DefaultMarker")));
+            }
         }
-
     }
 
 //    @Override

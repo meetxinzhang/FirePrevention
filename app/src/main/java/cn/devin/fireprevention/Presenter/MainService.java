@@ -99,11 +99,13 @@ public class MainService extends Service
 
         //test a new task
         public void testNewTask(){
+            Log.d(TAG, "testNewTask: "+"模拟新任务");
             mapContVi.onTaskLatLngChange(latLng_des);
             mainVi.onTaskDescriChange(new Date(), "测试任务标题", "测试任务描述");
         }
         //test a fire
         public void testNewFire(){
+            Log.d(TAG, "testNewFire: "+"模拟新火情");
             Fire fire = new Fire(ParseData.getMyLatLng(latLng_me));
             fire.addFireHead(new MyLatLng(28.135109,112.99911));
             fire.addFireHead(new MyLatLng(28.135209,112.99901));
@@ -117,18 +119,23 @@ public class MainService extends Service
         }
 
         public void testTeam(){
+            Log.d(TAG, "testTeam: "+"模拟队员位置信息");
             List<Person> list = new ArrayList();
             list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135109,112.99911))));
-            list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135209,112.99891))));
-            list.add(new Person(0, ParseData.getMyLatLng(new LatLng(28.135209,112.99911))));
+
             mapContVi.onTeamChange(list);
             mainVi.onTeamNumChange(list.size());
         }
 
         public void testFinish(){
+            Log.d(TAG, "testFinish: "+"模拟完成");
             mapContVi.onTaskFinish();
             mapContVi.onFireFinish();
             mainVi.onTaskDescriFinish();
+            List<Person> list = new ArrayList();
+            mapContVi.onTeamChange(list);
+            mainVi.onTeamNumChange(list.size());
+            checkSecurity();
         }
     }
 
@@ -239,7 +246,8 @@ public class MainService extends Service
         }else {
             this.fireHead = fire.getFireHead();
             if (fireHead.size() == 0){
-                mapContVi.onTaskFinish();
+                //mapContVi.onTaskFinish();
+                mapContVi.onFireFinish();
             }else {
                 mapContVi.onFireChange(ParseData.getLatLngs(fireHead));
                 checkSecurity();

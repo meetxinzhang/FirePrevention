@@ -35,20 +35,20 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
 //    private DataOutputStream outputStream = null;
 //    private DataInputStream inputStream = null;
 
-    public TCPPresenter(DetailContract.MainServ mainServ, String ip, int port){
+    TCPPresenter(DetailContract.MainServ mainServ, String ip, int port){
         this.mainServ = mainServ;
-        if (ip!=null && port!=0){
-            this.serverAddress = ip;
-            this.port = port;
-        }
+//        if (ip!=null && port!=0){
+        this.serverAddress = ip;
+        this.port = port;
+//        }
     }
 
     /**
      * 接受消息：
-     * 1-队友位置， 2-火情分布，
-     * 3-新任务：两个坐标都设置为0，表示任务完成
+     * 1-队友位置（list），2-着火位置（list，list.size为0表示没有着火点），3-灭火位置（不会接受到这个标识，因为2完成了这个功能）
+     * 4-新任务：两个坐标都设置为0，表示任务完成
      * 0-聊天信息
-     * 8-登录信息: 81-登录成功，80登录失败
+     * 81-登录成功，80登录失败
      */
     @Override
     public void run() {
@@ -79,7 +79,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
                     case '2':
                         mainServ.onFireChange(ParseData.getFire(s.substring(1)));
                         break;
-                    case '3':
+                    case '4':
                         mainServ.onTaskChange(ParseData.getTask(s.substring(1)));
                         break;
                     case '0':
@@ -101,7 +101,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
             //br.close();
         }catch(IOException e){
             e.printStackTrace();
-            mainServ.onConnectSuccess(false);
+            //mainServ.onConnectSuccess(false);
         }
     }
 
@@ -109,7 +109,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
     /**
      * 发送位时考虑到要重复调用，需要调用方自带线程
      * @param myLatLng 经纬度位置
-     * @param type 位置类型：1-我的位置， 2-着火位置， 3-已灭火位置
+     * @param type 位置类型：1-我的位置（single）， 2-着火位置（single）， 3-已灭火位置（single）
      */
     @Override
     public void sendMyLatlng(MyLatLng myLatLng, final int type) {
@@ -129,12 +129,13 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
                 }
             }else {
                 mainServ.onConnectSuccess(false);
+                Log.d(TAG, "sendMyLatlng: bw == null !!!");
             }
 
         } catch (IOException e){
             //TODO Auto-generated catch block
             e.printStackTrace();
-            mainServ.onConnectSuccess(false);
+            //mainServ.onConnectSuccess(false);
         }
     }
 
