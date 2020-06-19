@@ -130,11 +130,15 @@ public class MainService extends Service
         public void testFinish(){
             Log.d(TAG, "testFinish: "+"模拟完成");
             mapContVi.onTaskFinish();
-            mapContVi.onFireFinish();
+//            mapContVi.onFireFinish();
             mainVi.onTaskDescriFinish();
+
             List<Person> list = new ArrayList();
             mapContVi.onTeamChange(list);
             mainVi.onTeamNumChange(list.size());
+
+            fireHead.clear();
+            mapContVi.onFireFinish();
             checkSecurity();
         }
     }
@@ -227,7 +231,7 @@ public class MainService extends Service
             Log.d(TAG, "onTaskChange: UI 绘制未完成！");
         }else {
             MyLatLng newDes = task.getDestination();
-            if (newDes.getLng()==0 & newDes.getLng()==0){
+            if (newDes.getLng()==0 & newDes.getLng()==90){
                 // 表示任务完成
                 mapContVi.onTaskFinish();
                 mainVi.onTaskDescriFinish();

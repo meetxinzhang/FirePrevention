@@ -44,7 +44,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
     }
 
     /**
-     * 接受消息：
+     * 接受：
      * 1-队友位置（list），2-着火位置（list，list.size为0表示没有着火点），3-灭火位置（不会接受到这个标识，因为2完成了这个功能）
      * 4-新任务：两个坐标都设置为0，表示任务完成
      * 0-聊天信息
@@ -107,7 +107,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
 
 
     /**
-     * 发送位时考虑到要重复调用，需要调用方自带线程
+     * 发送实时位置时考虑到要重复调用，需要调用方自带线程
      * @param myLatLng 经纬度位置
      * @param type 位置类型：1-我的位置（single）， 2-着火位置（single）， 3-已灭火位置（single）
      */
@@ -141,7 +141,7 @@ public class TCPPresenter implements Runnable, DetailContract.TCPPre{
 
 
     /**
-     * 发送登录，聊天信息
+     * 发送：登录，聊天信息
      * 0-聊天信息， 8-登录信息
      * @param message 信息内容
      * @param type 消息类型
