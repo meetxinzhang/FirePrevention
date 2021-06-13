@@ -1,8 +1,8 @@
 # FirePrevention
 
-A Android App about fireman dispatching based on 'tencet map SDK'. 
+A Android App about fireman dispatching based on `tencet map SDK`. 
 
-Communicates with server using 'socket', lots of interface encapsulation are defined between UI and backend.
+Communicates with server using `socket`, lots of `interface encapsulation` are defined between UI and backend.
 
 This work was supported by the national 948 project.
 
